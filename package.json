@@ -3,9 +3,13 @@
   "title": "Lucid Gallery Lightbox",
   "description": "A WordPress plugin for lightbox galleries.",
   "version": "1.0.0",
-  "author": {
-    "name": "Jens Lindberg",
-    "url": "http://profiles.wordpress.org/elusiveunit/"
+  "author": "Jens Lindberg",
+  "homepage": "https://github.com/elusiveunit/lucid-gallery-lightbox",
+  "bugs": "https://github.com/elusiveunit/lucid-gallery-lightbox/issues",
+  "licence": "GPLv2 (or later)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elusiveunit/lucid-gallery-lightbox.git"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
