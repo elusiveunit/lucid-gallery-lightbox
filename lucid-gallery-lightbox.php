@@ -8,9 +8,9 @@
 
 /*
 Plugin Name: Lucid Gallery Lightbox
+Plugin URI: https://github.com/elusiveunit/lucid-gallery-lightbox
 Description: A tiny plugin that changes [gallery] shortcode output to HTML5 and adds lightbox functionality.
 Author: Jens Lindberg
-Author URI: http://profiles.wordpress.org/elusiveunit/
 Version: 1.0.0
 */
 

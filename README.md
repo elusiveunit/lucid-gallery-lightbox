@@ -56,6 +56,6 @@ What ColorBox theme to use, if the included CSS is loaded. Return string between
 
 ## Changelog
 
-### 1.0: Mar 27, 2013
+### 1.0.0: Mar 27, 2013
 
 * Initial version.
