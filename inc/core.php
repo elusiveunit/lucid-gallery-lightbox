@@ -2,7 +2,7 @@
 /**
  * Load assets and use custom shortcode output.
  *
- * Uses ColorBox by Jack Moore
+ * Uses Colorbox by Jack Moore
  * - Project site: http://www.jacklmoore.com/colorbox/
  * - Github: https://github.com/jackmoore/colorbox
  *
@@ -14,7 +14,7 @@
 if ( ! defined( 'ABSPATH' ) ) die( 'Nope' );
 
 /**
- * ColorBox setup and gallery shortcode output, all filterable.
+ * Colorbox setup and gallery shortcode output, all filterable.
  *
  * @package Lucid
  * @subpackage GalleryLightbox
@@ -35,7 +35,7 @@ class Lucid_Gallery_Lightbox {
 	 */
 	public function __construct( $file ) {
 		self::$plugin_file = $file;
-		
+
 		add_action( 'init', array( $this, 'load_translation' ), 1 );
 		add_filter( 'wp_footer', array( $this, 'colorbox_init' ), 999 );
 		add_filter( 'post_gallery', array( $this, 'gallery_shortcode' ), 10, 2 );
@@ -50,7 +50,7 @@ class Lucid_Gallery_Lightbox {
 	}
 
 	/**
-	 * Load ColorBox CSS and JavaScript.
+	 * Load Colorbox CSS and JavaScript.
 	 */
 	public function load_assets() {
 		$load_js = apply_filters( 'lgljl_load_included_js', true );
@@ -65,7 +65,7 @@ class Lucid_Gallery_Lightbox {
 	}
 
 	/**
-	 * Initialize the ColorBox in the footer.
+	 * Initialize the Colorbox in the footer.
 	 *
 	 * Original in wp-includes/media.php
 	 */
@@ -100,7 +100,7 @@ class Lucid_Gallery_Lightbox {
 				});
 			});
 
-			// Resize ColorBox on window resize, so it fits in window.
+			// Resize Colorbox on window resize, so it fits in window.
 			$(win).resize(function(){
 				clearTimeout(resized);
 
@@ -122,7 +122,7 @@ class Lucid_Gallery_Lightbox {
 	 *
 	 * It's mostly the same as the default, only difference is using figure, div
 	 * and figcaption instead of dl/dt/dd, as well as a class on every item used
-	 * for ColorBox grouping.
+	 * for Colorbox grouping.
 	 *
 	 * @param string $output Default output before processing, an empty string.
 	 * @param array $attr Shortcode attributes.
@@ -138,14 +138,14 @@ class Lucid_Gallery_Lightbox {
 		$instance++;
 
 		if ( ! empty( $attr['ids'] ) ) :
-			
+
 			// 'ids' is explicitly ordered, unless you specify otherwise.
 			if ( empty( $attr['orderby'] ) )
 				$attr['orderby'] = 'post__in';
-			
+
 			$attr['include'] = $attr['ids'];
 		endif;
-		
+
 		// We're trusting author input, so let's at least make sure it looks like a valid orderby statement
 		if ( isset( $attr['orderby'] ) ) :
 			$attr['orderby'] = sanitize_sql_orderby( $attr['orderby'] );
@@ -215,7 +215,7 @@ class Lucid_Gallery_Lightbox {
 			$output = "\n";
 			foreach ( $attachments as $att_id => $attachment )
 				$output .= wp_get_attachment_link( $att_id, $size, true ) . "\n";
-			
+
 			return $output;
 		endif;
 
@@ -246,15 +246,15 @@ class Lucid_Gallery_Lightbox {
 
 			$output .= "<{$itemtag} class='gallery-item'>";
 			$output .= "\n<{$icontag} class='gallery-icon'>$link</{$icontag}>";
-			
+
 			if ( $captiontag && trim( $attachment->post_excerpt ) )
 				$output .= "\n<{$captiontag} class='wp-caption-text gallery-caption'>" . wptexturize( $attachment->post_excerpt ) . "</{$captiontag}>";
-			
+
 			$output .= "</{$itemtag}>";
-			
+
 			if ( $columns > 0 && ++$i % $columns == 0 )
 				$output .= '<br style="clear: both">';
-		
+
 		endforeach;
 
 		$output .= "

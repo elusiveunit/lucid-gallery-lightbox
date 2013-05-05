@@ -10,7 +10,7 @@ module.exports = function(grunt) {
 		cssmin: {
 			themes: {
 				options: {
-					banner: '/*! <%= pkg.title %> <%= pkg.version %> - ColorBox style */'
+					banner: '/*! <%= pkg.title %> <%= pkg.version %> - Colorbox style */'
 				},
 				files: grunt.file.expandMapping(['*/colorbox.css'], 'themes/', {
 					cwd: 'themes/',
