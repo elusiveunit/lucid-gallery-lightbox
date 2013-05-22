@@ -1,18 +1,19 @@
 <?php
 /**
- * Lucid Gallery Lightbox definition.
+ * Lucid Gallery Lightbox plugin definition.
+ *
+ * Plugin Name: Lucid Gallery Lightbox
+ * Plugin URI: https://github.com/elusiveunit/lucid-gallery-lightbox
+ * Description: A tiny plugin that changes [gallery] shortcode output to HTML5 and adds lightbox functionality.
+ * Author: Jens Lindberg
+ * Version: 1.0.1
+ * License: GPL-2.0+
+ * Text Domain: lgljl
+ * Domain Path: /lang
  *
  * @package Lucid
  * @subpackage GalleryLightbox
  */
-
-/*
-Plugin Name: Lucid Gallery Lightbox
-Plugin URI: https://github.com/elusiveunit/lucid-gallery-lightbox
-Description: A tiny plugin that changes [gallery] shortcode output to HTML5 and adds lightbox functionality.
-Author: Jens Lindberg
-Version: 1.0.1
-*/
 
 // Block direct requests
 if ( ! defined( 'ABSPATH' ) ) die( 'Nope' );
