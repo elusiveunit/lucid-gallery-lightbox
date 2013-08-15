@@ -2,10 +2,6 @@
 /**
  * Load assets and use custom shortcode output.
  *
- * Uses Colorbox by Jack Moore
- * - Project site: http://www.jacklmoore.com/colorbox/
- * - Github: https://github.com/jackmoore/colorbox
- *
  * @package Lucid
  * @subpackage GalleryLightbox
  */
@@ -53,15 +49,14 @@ class Lucid_Gallery_Lightbox {
 	 * Load Colorbox CSS and JavaScript.
 	 */
 	public function load_assets() {
-		$load_js = apply_filters( 'lgljl_load_included_js', true );
-		$load_css = apply_filters( 'lgljl_load_included_css', true );
+		if ( apply_filters( 'lgljl_load_included_js', true ) ) :
+			$version = ( apply_filters( 'lgljl_use_custom_js_build', true ) ) ? '-build.min' : '.min';
 
-		if ( $load_js ) wp_enqueue_script( 'colorbox', LGLJL_PLUGIN_URL . 'js/jquery.colorbox-min.js', array( 'jquery' ), null, true );
-
-		if ( $load_css ) :
-			$theme = apply_filters( 'lgljl_lightbox_theme_style', '3' );
-			wp_enqueue_style( 'colorbox', LGLJL_PLUGIN_URL . "themes/{$theme}/colorbox.min.css", false, null );
+			wp_enqueue_script( 'magnific-popup', LGLJL_PLUGIN_URL . "js/jquery.magnific-popup{$version}.js", array( 'jquery' ), null, true );
 		endif;
+
+		if ( apply_filters( 'lgljl_load_included_css', true ) )
+			wp_enqueue_style( 'magnific-popup', LGLJL_PLUGIN_URL . 'css/magnific-popup.min.css', false, null );
 	}
 
 	/**
@@ -70,50 +65,58 @@ class Lucid_Gallery_Lightbox {
 	 * Original in wp-includes/media.php
 	 */
 	public function colorbox_init() {
-		$init = apply_filters( 'lgljl_init_lightbox', true );
-		if ( ! $init ) return;
+		if ( ! apply_filters( 'lgljl_init_lightbox', true ) ) return;
 
-		if ( false ) : // Don't output, minified is used below ?>
+		$separate_galleries = apply_filters( 'lgljl_separate_galleries', false );
+
+		// Don't output, minified is used below
+		if ( false ) : ?>
 
 		<script>(function($, win) {
 			'use strict';
 
-			var resized, colorboxLoaded = false;
+			var $textarea = $('textarea'),
+			options = {
+				delegate: 'a',
+				type: 'image',
+				disableOn: 0,
+				tClose: "<?php _e( 'Close (Esc)', 'lgljl' ); ?>",
+				tLoading: "<?php _e( 'Loading...', 'lgljl' ); ?>",
+				gallery: {
+					enabled: true,
+					tPrev: "<?php _e( 'Previous (Left arrow key)', 'lgljl' ); ?>",
+					tNext: "<?php _e( 'Next (Right arrow key)', 'lgljl' ); ?>",
+					tCounter: "<?php _e( '%curr% of %total%', 'lgljl' ); ?>"
+				},
+				image: {
+					tError: "<?php _e( '<a href=\"%url%\">The image</a> could not be loaded.', 'lgljl' ); ?>",
+					titleSrc: function(item) {
+						var content = $textarea.html( item.el.data( 'desc' ) ).text();
 
-			$('.gallery').each(function() {
-				var self = this,
-				    id = self.id.replace( /gallery-/, '' );
-
-				$(self).find('a').colorbox({
-					rel: 'gallery-item-' + id,
-					maxWidth: '95%',
-					maxHeight: '90%',
-					current: '<?php _e( "Image {current} of {total}", "lgljl" ); ?>',
-					previous: '<?php _e( "Previous", "lgljl" ); ?>',
-					next: '<?php _e( "Next", "lgljl" ); ?>',
-					close: '<?php _e( "Close", "lgljl" ); ?>',
-					xhrError: '<?php _e( "This content failed to load.", "lgljl" ); ?>',
-					imgError: '<?php _e( "This image failed to load.", "lgljl" ); ?>',
-					onComplete: function() {
-						colorboxLoaded = true;
+						return '<div class="lightbox-title">' + item.el.attr( 'title' ) + '</div>' +
+						       '<div class="lightbox-content">' + content + '</div>';
 					}
+				},
+				ajax: {
+					tError: "<?php _e( '<a href=\"%url%\">The content</a> could not be loaded.', 'lgljl' ); ?>"
+				}
+			};
+
+			<?php if ( $separate_galleries ) : ?>
+				$('.gallery').each(function() {
+					$(this).magnificPopup( options );
 				});
-			});
+			<?php else : ?>
+				$('.gallery').magnificPopup( options );
+			<?php endif; ?>
 
-			// Resize Colorbox on window resize, so it fits in window.
-			$(win).resize(function(){
-				clearTimeout(resized);
-
-				resized = setTimeout(function() {
-					// The $.colorbox.resize() method seems to be doing something
-					// other than the load resizing.
-					if ( colorboxLoaded ) { $.colorbox.load(); }
-				}, 300);
-			});
 		}(jQuery, window));</script>
 
-		<?php else : // Output minified ?>
-		<script>(function(a,d){var b,c=!1;a(".gallery").each(function(){var b=this.id.replace(/gallery-/,"");a(this).find("a").colorbox({rel:"gallery-item-"+b,maxWidth:"95%",maxHeight:"90%",current:'<?php _e( "Image {current} of {total}", "lgljl" ); ?>',previous:'<?php _e( "Previous", "lgljl" ); ?>',next:'<?php _e( "Next", "lgljl" ); ?>',close:'<?php _e( "Close", "lgljl" ); ?>',xhrError:'<?php _e( "This content failed to load.", "lgljl" ); ?>',imgError:'<?php _e( "This image failed to load.", "lgljl" ); ?>',onComplete:function(){c=!0}})});a(d).resize(function(){clearTimeout(b);b=setTimeout(function(){c&&a.colorbox.load()},300)})})(jQuery,window);</script>
+		<?php
+		// Output minified. Remove PHP conditional from above and re-insert it
+		// manually to avoid minifier complaining.
+		else : ?>
+		<script>(function(a,d){var c=a("textarea"),b={delegate:"a",type:"image",disableOn:0,tClose:"<?php _e( 'Close (Esc)', 'lgljl' ); ?>",tLoading:"<?php _e( 'Loading...', 'lgljl' ); ?>",gallery:{enabled:!0,tPrev:"<?php _e( 'Previous (Left arrow key)', 'lgljl' ); ?>",tNext:"<?php _e( 'Next (Right arrow key)', 'lgljl' ); ?>",tCounter:"<?php _e( '%curr% of %total%', 'lgljl' ); ?>"},image:{tError:"<?php _e( '<a href=\"%url%\">The image</a> could not be loaded.', 'lgljl' ); ?>",titleSrc:function(a){var b=c.html(a.el.data("desc")).text();return'<div class="lightbox-title">'+a.el.attr("title")+'</div><div class="lightbox-content">'+b+"</div>"}},ajax:{tError:"<?php _e( '<a href=\"%url%\">The content</a> could not be loaded.', 'lgljl' ); ?>"}};<?php if ( $separate_galleries ) : ?>a(".gallery").each(function(){a(this).magnificPopup(b)})<?php else : ?>a(".gallery").magnificPopup(b)<?php endif; ?>})(jQuery,window);</script>
 		<?php endif;
 	}
 
@@ -121,16 +124,15 @@ class Lucid_Gallery_Lightbox {
 	 * Custom [gallery] shortcode output.
 	 *
 	 * It's mostly the same as the default, only difference is using figure, div
-	 * and figcaption instead of dl/dt/dd, as well as a class on every item used
-	 * for Colorbox grouping.
+	 * and figcaption instead of dl/dt/dd, as well as some minor customizations
+	 * for the lightbox.
 	 *
 	 * @param string $output Default output before processing, an empty string.
 	 * @param array $attr Shortcode attributes.
 	 * @return string Gallery HTML.
 	 */
 	public function gallery_shortcode( $output, $attr ) {
-		$custom_output = apply_filters( 'lgljl_html5_shortcode_output', true );
-		if ( ! $custom_output ) return;
+		if ( ! apply_filters( 'lgljl_html5_shortcode_output', true ) ) return;
 
 		global $post;
 
@@ -223,6 +225,7 @@ class Lucid_Gallery_Lightbox {
 		$captiontag = tag_escape( $captiontag );
 		$icontag = tag_escape( $icontag );
 		$valid_tags = wp_kses_allowed_html( 'post' );
+
 		if ( ! isset( $valid_tags[ $itemtag ] ) )
 			$itemtag = 'figure';
 		if ( ! isset( $valid_tags[ $icontag ] ) )
@@ -238,11 +241,15 @@ class Lucid_Gallery_Lightbox {
 		$gallery_div = "<div id=\"gallery-{$instance}\" class=\"gallery galleryid-{$id} gallery-columns-{$columns} gallery-size-{$size_class}\">";
 		$output = $gallery_div;
 
+		echo '<pre style="background: #fff; color: #333; font-size: 12px;">'; var_dump( $size ); echo '</pre>';
 		$i = 0;
 		foreach ( $attachments as $id => $attachment ) :
-			//$link = ( isset( $attr['link'] ) && 'file' == $attr['link'] ) ? wp_get_attachment_link( $id, $size, false, false ) : wp_get_attachment_link( $id, $size, true, false );
-			$link = wp_get_attachment_link( $id, $size, false, false );
-			$link = preg_replace( '/<a(?!\/>)/', "<a class=\"gallery-item-{$instance}\" ", $link );
+			$image = wp_get_attachment_image( $id, $size );
+			$url = wp_get_attachment_image_src( $id, apply_filters( 'lgljl_large_image_size', 'large' ) );
+			$url = $url[0];
+			$title = esc_attr( $attachment->post_content );
+
+			$link = "<a href=\"{$url}\" title=\"{$title}\" class=\"gallery-item-{$instance}\">{$image}</a>";
 
 			$output .= "<{$itemtag} class='gallery-item'>";
 			$output .= "\n<{$icontag} class='gallery-icon'>$link</{$icontag}>";
@@ -254,7 +261,6 @@ class Lucid_Gallery_Lightbox {
 
 			if ( $columns > 0 && ++$i % $columns == 0 )
 				$output .= '<br style="clear: both">';
-
 		endforeach;
 
 		$output .= "

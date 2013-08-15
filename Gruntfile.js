@@ -10,14 +10,11 @@ module.exports = function(grunt) {
 		cssmin: {
 			themes: {
 				options: {
-					banner: '/*! <%= pkg.title %> <%= pkg.version %> - Colorbox style */'
+					banner: '/*! <%= pkg.title %> <%= pkg.version %> - Magnific Popup CSS */'
 				},
-				files: grunt.file.expandMapping(['*/colorbox.css'], 'themes/', {
-					cwd: 'themes/',
-					rename: function(destBase, destPath) {
-						return destBase + destPath.replace(/\.css$/, '.min.css');
-					}
-				})
+				files: {
+					'css/magnific-popup.min.css': ['css/magnific-popup.css']
+				}
 			}
 		}
 
