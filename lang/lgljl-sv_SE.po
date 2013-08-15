@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Lucid Gallery Lightbox v1.0\n"
+"Project-Id-Version: Lucid Gallery Lightbox v2.0.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-03-13 15:27:03+0000\n"
+"PO-Revision-Date: 2013-08-13 19:16:23+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -20,39 +20,78 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Textdomain-Support: yes"
 
-#: inc/core.php:53
-#: inc/core.php:76
+#: inc/core.php:83
+#: inc/core.php:119
 #@ lgljl
-msgid "Image {current} of {total}"
-msgstr "Bild {current} av {total}"
+msgid "Close (Esc)"
+msgstr "Stäng (Esc)"
 
-#: inc/core.php:54
-#: inc/core.php:76
+#: inc/core.php:84
+#: inc/core.php:119
 #@ lgljl
-msgid "Previous"
-msgstr "Föregående"
+msgid "Loading..."
+msgstr "Laddar..."
 
-#: inc/core.php:55
-#: inc/core.php:76
+#: inc/core.php:87
+#: inc/core.php:119
 #@ lgljl
-msgid "Next"
-msgstr "Nästa"
+msgid "Previous (Left arrow key)"
+msgstr "Föregående (Vänsterpil)"
 
-#: inc/core.php:56
-#: inc/core.php:76
+#: inc/core.php:88
+#: inc/core.php:119
 #@ lgljl
-msgid "Close"
-msgstr "Stäng"
+msgid "Next (Right arrow key)"
+msgstr "Nästa (Högerpil)"
 
-#: inc/core.php:57
-#: inc/core.php:76
+#: inc/core.php:89
+#: inc/core.php:119
+#, php-format
 #@ lgljl
-msgid "This content failed to load."
-msgstr "Innehållet kunde inte laddas."
+msgid "%curr% of %total%"
+msgstr "%curr% av %total%"
 
-#: inc/core.php:58
-#: inc/core.php:76
+#: inc/core.php:92
+#: inc/core.php:119
+#, php-format
 #@ lgljl
-msgid "This image failed to load."
-msgstr "Bilden kunde inte laddas."
+msgid "<a href=\\\"%url%\\\">The image</a> could not be loaded."
+msgstr "<a href=\\\"%url%\\\">Bilden</a> kunde inte laddas."
+
+#: inc/core.php:101
+#: inc/core.php:119
+#, php-format
+#@ lgljl
+msgid "<a href=\\\"%url%\\\">The content</a> could not be loaded."
+msgstr "<a href=\\\"%url%\\\">Innehållet</a> kunde inte laddas."
+
+#. translators: plugin header field 'Name'
+#: lucid-gallery-lightbox.php:0
+#@ lgljl
+msgid "Lucid Gallery Lightbox"
+msgstr ""
+
+#. translators: plugin header field 'PluginURI'
+#: lucid-gallery-lightbox.php:0
+#@ lgljl
+msgid "https://github.com/elusiveunit/lucid-gallery-lightbox"
+msgstr ""
+
+#. translators: plugin header field 'Description'
+#: lucid-gallery-lightbox.php:0
+#@ lgljl
+msgid "A tiny plugin that changes [gallery] shortcode output to HTML5 and adds lightbox functionality."
+msgstr ""
+
+#. translators: plugin header field 'Author'
+#: lucid-gallery-lightbox.php:0
+#@ lgljl
+msgid "Jens Lindberg"
+msgstr ""
+
+#. translators: plugin header field 'Version'
+#: lucid-gallery-lightbox.php:0
+#@ lgljl
+msgid "2.0.0"
+msgstr ""
 
