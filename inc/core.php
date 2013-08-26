@@ -241,7 +241,6 @@ class Lucid_Gallery_Lightbox {
 		$gallery_div = "<div id=\"gallery-{$instance}\" class=\"gallery galleryid-{$id} gallery-columns-{$columns} gallery-size-{$size_class}\">";
 		$output = $gallery_div;
 
-		echo '<pre style="background: #fff; color: #333; font-size: 12px;">'; var_dump( $size ); echo '</pre>';
 		$i = 0;
 		foreach ( $attachments as $id => $attachment ) :
 			$image = wp_get_attachment_image( $id, $size );
