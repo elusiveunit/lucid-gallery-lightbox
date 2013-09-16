@@ -68,7 +68,7 @@ Whether to load the included lightbox CSS. Set to false and load in the theme's 
 
 **lgljl\_load\_included\_js**
 
-Whether to load the included lightbox JavaScript. Set to false and load in the theme's script file to save a request.
+Whether to load the included lightbox JavaScript. Set to false and load in the theme's script file (if used) to save a request. Do note though, by default the script only loads when the gallery shortcode is used. Packing it with a theme's script file may introduce unnecessary weight for those who won't need it.
 
 	add_filter( 'lgljl_load_included_js', '__return_false' );
 
@@ -89,6 +89,11 @@ Whether to load a separate lightbox instance for every gallery. This basically d
 	add_filter( 'lgljl_separate_galleries', '__return_true' );
 
 ## Changelog
+
+### 2.0.1: Sep 16, 2013
+
+* Tweak: Only load the script when the gallery shortcode is used.
+* Tweak: Update Magnific Popup to 0.9.5.
 
 ### 2.0.0: Aug 13, 2013
 
