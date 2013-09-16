@@ -10,7 +10,7 @@
 if ( ! defined( 'ABSPATH' ) ) die( 'Nope' );
 
 /**
- * Colorbox setup and gallery shortcode output, all filterable.
+ * Lightbox setup and gallery shortcode output, all filterable.
  *
  * @package Lucid
  * @subpackage GalleryLightbox
@@ -20,6 +20,7 @@ class Lucid_Gallery_Lightbox {
 	/**
 	 * Full path to plugin main file.
 	 *
+	 * @since 1.0.0
 	 * @var string
 	 */
 	public static $plugin_file;
@@ -27,44 +28,58 @@ class Lucid_Gallery_Lightbox {
 	/**
 	 * Constructor, add hooks.
 	 *
+	 * @since 1.0.0
 	 * @param string $file Full path to plugin main file.
 	 */
 	public function __construct( $file ) {
 		self::$plugin_file = $file;
 
 		add_action( 'init', array( $this, 'load_translation' ), 1 );
-		add_filter( 'wp_footer', array( $this, 'colorbox_init' ), 999 );
 		add_filter( 'post_gallery', array( $this, 'gallery_shortcode' ), 10, 2 );
 		add_filter( 'wp_enqueue_scripts', array( $this, 'load_assets' ) );
 	}
 
 	/**
 	 * Load translation.
+	 *
+	 * @since 1.0.0
 	 */
 	public function load_translation() {
 		load_plugin_textdomain( 'lgljl', false, trailingslashit( dirname( plugin_basename( self::$plugin_file ) ) ) . 'lang/' );
 	}
 
 	/**
-	 * Load Colorbox CSS and JavaScript.
+	 * Load lightbox CSS and JavaScript.
+	 *
+	 * @since 1.0.0
 	 */
 	public function load_assets() {
+
+		// JavaScript
 		if ( apply_filters( 'lgljl_load_included_js', true ) ) :
 			$version = ( apply_filters( 'lgljl_use_custom_js_build', true ) ) ? '-build.min' : '.min';
 
-			wp_enqueue_script( 'magnific-popup', LGLJL_PLUGIN_URL . "js/jquery.magnific-popup{$version}.js", array( 'jquery' ), null, true );
+			wp_register_script( 'lgljl-magnific-popup', LGLJL_PLUGIN_URL . "js/jquery.magnific-popup{$version}.js", array( 'jquery-core' ), null, true );
+
+			// Add script enqueue and init here if not using custom output.
+			// Otherwise it's handled on demand in the shortcode function.
+			if ( ! apply_filters( 'lgljl_html5_shortcode_output', true ) ) :
+				wp_enqueue_script( 'lgljl-magnific-popup' );
+				add_filter( 'wp_footer', array( $this, 'lightbox_init' ), 999 );
+			endif;
 		endif;
 
+		// CSS
 		if ( apply_filters( 'lgljl_load_included_css', true ) )
-			wp_enqueue_style( 'magnific-popup', LGLJL_PLUGIN_URL . 'css/magnific-popup.min.css', false, null );
+			wp_enqueue_style( 'lgljl-magnific-popup', LGLJL_PLUGIN_URL . 'css/magnific-popup.min.css', false, null );
 	}
 
 	/**
-	 * Initialize the Colorbox in the footer.
+	 * Initialize the lightbox in the footer.
 	 *
-	 * Original in wp-includes/media.php
+	 * @since 2.0.1
 	 */
-	public function colorbox_init() {
+	public function lightbox_init() {
 		if ( ! apply_filters( 'lgljl_init_lightbox', true ) ) return;
 
 		$separate_galleries = apply_filters( 'lgljl_separate_galleries', false );
@@ -127,12 +142,17 @@ class Lucid_Gallery_Lightbox {
 	 * and figcaption instead of dl/dt/dd, as well as some minor customizations
 	 * for the lightbox.
 	 *
+	 * @since 1.0.0
 	 * @param string $output Default output before processing, an empty string.
 	 * @param array $attr Shortcode attributes.
 	 * @return string Gallery HTML.
 	 */
 	public function gallery_shortcode( $output, $attr ) {
 		if ( ! apply_filters( 'lgljl_html5_shortcode_output', true ) ) return;
+
+		// Load script and init
+		wp_enqueue_script( 'lgljl-magnific-popup' );
+		add_filter( 'wp_footer', array( $this, 'lightbox_init' ), 999 );
 
 		global $post;
 
