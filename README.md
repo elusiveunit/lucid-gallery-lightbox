@@ -53,7 +53,7 @@ If loading the included JavaScript, this decides if a custom build should be loa
 
 **lgljl\_init\_lightbox**
 
-Whether to initiallize the lightbox automatically. Disable if you want to use custom options, callbacks etc.
+Whether to initiallize the lightbox automatically (call the lightbox method on gallery jQuery objects). Disable if you want to use custom options, callbacks etc.
 
 	add_filter( 'lgljl_init_lightbox', '__return_false' );
 
@@ -94,7 +94,7 @@ Filter the HTML classes used as jQuery selectors. The gallery class is used for 
 	 * @return string The new selector.
 	 */
 	function my_prefix_set_gallery_item_class( $default_selector ) {
-		return '.my-link-class';
+		return 'my-link-class';
 	}
 	add_filter( 'lgljl_gallery_item_class', 'my_prefix_set_gallery_item_class' );
 
