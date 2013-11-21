@@ -23,38 +23,7 @@ As mentioned above, the gallery item elements are changed from `dl`, `dt` and `d
 
 ## Options via hooks
 
-I didn't want to include an options page for such a simple plugin, so everything is adjustable via hooks.
-
-**lgljl\_init\_lightbox**
-
-Whether to initiallize the lightbox automatically. Disable if you want to use custom options, callbacks etc.
-
-	add_filter( 'lgljl_init_lightbox', '__return_false' );
-
------
-
-**lgljl\_html5\_shortcode\_output**
-
-Whether to output HTML5 figure and figcaption instead of the default dl/dt/dd elements. Some themes target the default elements directly with their gallery styling, instead of using the available classes, which may break the gallery appearance if using this output.
-
-	add_filter( 'lgljl_html5_shortcode_output', '__return_false' );
-
------
-
-**lgljl\_large\_image\_size**
-
-Name of image size to use for the magnified/lightboxed image. Defaults to `'large'`.
-
-	/**
-	 * Set the magnified image size used in Lucid Gallery Lightbox.
-	 *
-	 * @param string $default_size The default image size set in the plugin.
-	 * @return string The new image size.
-	 */
-	function themename_set_lightbox_image_size( $default_size ) {
-		return 'full';
-	}
-	add_filter( 'lgljl_large_image_size', 'themename_set_lightbox_image_size' );
+Since this is a very simple plugin, and the options are pretty 'code based', I didn't want to include an options page. Everything is instead adjustable via hooks.
 
 -----
 
@@ -82,13 +51,118 @@ If loading the included JavaScript, this decides if a custom build should be loa
 
 -----
 
+**lgljl\_init\_lightbox**
+
+Whether to initiallize the lightbox automatically. Disable if you want to use custom options, callbacks etc.
+
+	add_filter( 'lgljl_init_lightbox', '__return_false' );
+
+-----
+
+**lgljl\_do\_lightbox**
+
+_Exists as both a function and a filter._
+
+By default, the lightbox JavaScript is only added if a page has a gallery. These can be used to add it to any page, in case you want to use it on something else as well.
+
+**Note:** The container for any custom lightbox use must have the class name `lgljl-gallery`
+
+	// Before wp_head
+	add_filter( 'lgljl_do_lightbox', '__return_true' );
+
+	// Before wp_footer
+	lgljl_do_lightbox();
+
+-----
+
 **lgljl\_separate\_galleries**
 
 Whether to load a separate lightbox instance for every gallery. This basically decides if the previous and next arrows should work between multiple galleries or not. Defaults to false for optimal performace.
 
 	add_filter( 'lgljl_separate_galleries', '__return_true' );
 
+-----
+
+**lgljl\_gallery\_class** and **lgljl\_gallery\_item\_class**
+
+Filter the HTML classes used as jQuery selectors. The gallery class is used for initializing the the lightbox, while the gallery item is used as a delegate selector. Defaults to `lgljl-gallery` and `lgljl-gallery-item` respectively.
+
+	/**
+	 * Set the jQuery delegation selector used in Lucid Gallery Lightbox.
+	 *
+	 * @param string $default_selector The default selector set in the plugin.
+	 * @return string The new selector.
+	 */
+	function my_prefix_set_gallery_item_class( $default_selector ) {
+		return '.my-link-class';
+	}
+	add_filter( 'lgljl_gallery_item_class', 'my_prefix_set_gallery_item_class' );
+
+-----
+
+**lgljl\_gallery\_type**
+
+Use to set other gallery types than `image`. At this time of writing, available types are image, iframe, inline, and ajax. See [the documentation](http://dimsemenov.com/plugins/magnific-popup/documentation.html#content_types) for usage.
+
+	/**
+	 * Set the gallery type used in Lucid Gallery Lightbox.
+	 *
+	 * @param string $default_type The default gallery type set in the plugin.
+	 * @return string The new gallery type.
+	 */
+	function my_prefix_set_lightbox_gallery_type( $default_type ) {
+		return 'iframe';
+	}
+	add_filter( 'lgljl_gallery_type', 'my_prefix_set_lightbox_gallery_type' );
+
+-----
+
+**lgljl\_html5\_shortcode\_output**
+
+Whether to output HTML5 figure and figcaption instead of the default dl/dt/dd elements. Some themes target the default elements directly with their gallery styling, instead of using the available classes, which may break the gallery appearance if using this output.
+
+	add_filter( 'lgljl_html5_shortcode_output', '__return_false' );
+
+-----
+
+**lgljl\_large\_image\_size**
+
+Name of image size to use for the magnified/lightboxed image. Defaults to `'large'`.
+
+	/**
+	 * Set the magnified image size used in Lucid Gallery Lightbox.
+	 *
+	 * @param string $default_size The default image size set in the plugin.
+	 * @return string The new image size.
+	 */
+	function my_prefix_set_lightbox_image_size( $default_size ) {
+		return 'full';
+	}
+	add_filter( 'lgljl_large_image_size', 'my_prefix_set_lightbox_image_size' );
+
+-----
+
+**lgljl\_include\_image\_title**
+
+Whether to include the image (attachment) title in the lightbox caption. Defaults to false, since the title on attachment are often just the file names if left unchanged.
+
+	add_filter( 'lgljl_include_image_title', '__return_true' );
+
+-----
+
 ## Changelog
+
+### 2.1.0: Nov 21, 2013
+
+* New: Add `lgljl_do_lightbox` function, to load the script and initialize the lightbox on pages without galleries.
+* New: Add `lgljl_do_lightbox` filter. Filter version of the above.
+* New: Add `lgljl_gallery_class` and `lgljl_gallery_item_class` filters, to control the HTML classes used as jQuery selectors.
+* New: Add `lgljl_gallery_type` filter, to set the gallery 'type' to use.
+* New: Add `lgljl_include_image_title` filter, to control if attachment title is included in the lightbox.
+* Fix: Actually set the `title` and `data-desc` attributes the script is looking for, derp.
+* Tweak: Update Magnific Popup to 0.9.9.
+* Tweak: Change the default jQuery selector for initialization from `.gallery` to `.lgljl-gallery`.
+* Tweak: Change the lightbox text classes to `lgljl-title` and `lgljl-desc`, and make the title bold.
 
 ### 2.0.1: Sep 16, 2013
 
