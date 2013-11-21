@@ -26,6 +26,34 @@ class Lucid_Gallery_Lightbox {
 	public static $plugin_file;
 
 	/**
+	 * If setup (script enqueue and footer init) has been run.
+	 *
+	 * @since 2.1.0
+	 * @var bool
+	 */
+	protected static $_is_setup_done = false;
+
+	/**
+	 * HTML class used for the gallery container.
+	 *
+	 * Filterable with lgljl_gallery_class.
+	 *
+	 * @since 2.1.0
+	 * @var string
+	 */
+	protected $_gallery_class = 'lgljl-gallery';
+
+	/**
+	 * HTML class used for the gallery items.
+	 *
+	 * Filterable with lgljl_gallery_item_class.
+	 *
+	 * @since 2.1.0
+	 * @var string
+	 */
+	protected $_gallery_item_class = 'lgljl-gallery-item';
+
+	/**
 	 * Constructor, add hooks.
 	 *
 	 * @since 1.0.0
@@ -37,6 +65,7 @@ class Lucid_Gallery_Lightbox {
 		add_action( 'init', array( $this, 'load_translation' ), 1 );
 		add_filter( 'post_gallery', array( $this, 'gallery_shortcode' ), 10, 2 );
 		add_filter( 'wp_enqueue_scripts', array( $this, 'load_assets' ) );
+		add_action( 'wp_head', array( $this, 'lightbox_filtering' ), 999 );
 	}
 
 	/**
@@ -59,19 +88,52 @@ class Lucid_Gallery_Lightbox {
 		if ( apply_filters( 'lgljl_load_included_js', true ) ) :
 			$version = ( apply_filters( 'lgljl_use_custom_js_build', true ) ) ? '-build.min' : '.min';
 
-			wp_register_script( 'lgljl-magnific-popup', LGLJL_PLUGIN_URL . "js/jquery.magnific-popup{$version}.js", array( 'jquery-core' ), null, true );
+			wp_register_script( 'lgljl-magnific-popup', LGLJL_PLUGIN_URL . "js/jquery.magnific-popup{$version}.js", array( 'jquery-core' ), LGLJL_VERSION, true );
 
 			// Add script enqueue and init here if not using custom output.
 			// Otherwise it's handled on demand in the shortcode function.
 			if ( ! apply_filters( 'lgljl_html5_shortcode_output', true ) ) :
-				wp_enqueue_script( 'lgljl-magnific-popup' );
-				add_filter( 'wp_footer', array( $this, 'lightbox_init' ), 999 );
+				$this->setup_lightbox();
 			endif;
 		endif;
 
 		// CSS
 		if ( apply_filters( 'lgljl_load_included_css', true ) )
-			wp_enqueue_style( 'lgljl-magnific-popup', LGLJL_PLUGIN_URL . 'css/magnific-popup.min.css', false, null );
+			wp_enqueue_style( 'lgljl-magnific-popup', LGLJL_PLUGIN_URL . 'css/magnific-popup.min.css', false, LGLJL_VERSION );
+	}
+
+	/**
+	 * Allow for some filtering.
+	 *
+	 * Allow for a manual init through the 'lgljl_do_lightbox' filter, as
+	 * well as changing the classes used.
+	 *
+	 * Runs on late wp_head since it's the last guaranteed (well, pretty much)
+	 * hook before body output.
+	 *
+	 * @since 2.1.0
+	 */
+	public function lightbox_filtering() {
+		$this->_gallery_class = apply_filters( 'lgljl_gallery_class', $this->_gallery_class );
+		$this->_gallery_item_class = apply_filters( 'lgljl_gallery_item_class', $this->_gallery_item_class );
+
+		if ( apply_filters( 'lgljl_do_lightbox', false ) )
+			$this->setup_lightbox();
+	}
+
+	/**
+	 * Enqueue the lightbox script and add the init script to the wp_footer hook.
+	 *
+	 * @since 2.1.0
+	 */
+	public function setup_lightbox() {
+		if ( self::$_is_setup_done )
+			return;
+
+		wp_enqueue_script( 'lgljl-magnific-popup' );
+		add_action( 'wp_footer', array( $this, 'lightbox_init' ), 999 );
+
+		self::$_is_setup_done = true;
 	}
 
 	/**
@@ -92,8 +154,8 @@ class Lucid_Gallery_Lightbox {
 
 			var $emptyDiv = $('<div></div>'),
 			options = {
-				delegate: 'a',
-				type: 'image',
+				delegate: ".<?php echo $this->_gallery_item_class; ?>",
+				type: "<?php echo apply_filters( 'lgljl_gallery_type', 'image' ); ?>",
 				disableOn: 0,
 				tClose: "<?php _e( 'Close (Esc)', 'lgljl' ); ?>",
 				tLoading: "<?php _e( 'Loading...', 'lgljl' ); ?>",
@@ -131,20 +193,20 @@ class Lucid_Gallery_Lightbox {
 			}
 
 			<?php if ( $separate_galleries ) : ?>
-				$('.gallery').each(function() {
+				$('.<?php echo $this->_gallery_class; ?>').each(function() {
 					$(this).magnificPopup( options );
 				});
 			<?php else : ?>
-				$('.gallery').magnificPopup( options );
+				$('.<?php echo $this->_gallery_class; ?>').magnificPopup( options );
 			<?php endif; ?>
 
 		}(jQuery, window));</script>
 
 		<?php
-		// Output minified. Remove PHP conditional from above and re-insert it
-		// manually to avoid minifier complaining.
+		// Output minified. Remove PHP conditional from above to stop minifier
+		// from choking and re-insert it manually.
 		else : ?>
-		<script>(function(a,d){var c=a("textarea"),b={delegate:"a",type:"image",disableOn:0,tClose:"<?php _e( 'Close (Esc)', 'lgljl' ); ?>",tLoading:"<?php _e( 'Loading...', 'lgljl' ); ?>",gallery:{enabled:!0,tPrev:"<?php _e( 'Previous (Left arrow key)', 'lgljl' ); ?>",tNext:"<?php _e( 'Next (Right arrow key)', 'lgljl' ); ?>",tCounter:"<?php _e( '%curr% of %total%', 'lgljl' ); ?>"},image:{tError:"<?php _e( '<a href=\"%url%\">The image</a> could not be loaded.', 'lgljl' ); ?>",titleSrc:function(a){var b=c.html(a.el.data("desc")).text();return'<div class="lightbox-title">'+a.el.attr("title")+'</div><div class="lightbox-content">'+b+"</div>"}},ajax:{tError:"<?php _e( '<a href=\"%url%\">The content</a> could not be loaded.', 'lgljl' ); ?>"}};<?php if ( $separate_galleries ) : ?>a(".gallery").each(function(){a(this).magnificPopup(b)})<?php else : ?>a(".gallery").magnificPopup(b)<?php endif; ?>})(jQuery,window);</script>
+		<script>(function(a,f){var d=a("<div></div>"),e={delegate:".<?php echo $this->_gallery_item_class; ?>",type:"<?php echo apply_filters( 'lgljl_gallery_type', 'image' ); ?>",disableOn:0,tClose:"<?php _e( 'Close (Esc)', 'lgljl' ); ?>",tLoading:"<?php _e( 'Loading...', 'lgljl' ); ?>",gallery:{enabled:!0,tPrev:"<?php _e( 'Previous (Left arrow key)', 'lgljl' ); ?>",tNext:"<?php _e( 'Next (Right arrow key)', 'lgljl' ); ?>",tCounter:"<?php _e( '%curr% of %total%', 'lgljl' ); ?>"},image:{tError:"<?php _e( '<a href=\"%url%\">The image</a> could not be loaded.', 'lgljl' ); ?>",titleSrc:function(b){var a=b.el.attr("title");b=b.el.data("desc");var c="";a&&(c+='<div class="lgljl-title">'+d.text(a).html()+"</div>");b&&(c+='<div class="lgljl-desc">'+d.text(b).html()+"</div>");return c}},ajax:{tError:"<?php _e( '<a href=\"%url%\">The content</a> could not be loaded.', 'lgljl' ); ?>"}};<?php if ( $separate_galleries ) : ?>a(".<?php echo $this->_gallery_class; ?>").each(function(){a(this).magnificPopup(e)})<?php else : ?>a(".<?php echo $this->_gallery_class; ?>").magnificPopup(e)<?php endif; ?>})(jQuery,window);</script>
 		<?php endif;
 	}
 
@@ -164,8 +226,7 @@ class Lucid_Gallery_Lightbox {
 		if ( ! apply_filters( 'lgljl_html5_shortcode_output', true ) ) return;
 
 		// Load script and init
-		wp_enqueue_script( 'lgljl-magnific-popup' );
-		add_filter( 'wp_footer', array( $this, 'lightbox_init' ), 999 );
+		$this->setup_lightbox();
 
 		global $post;
 
@@ -271,7 +332,7 @@ class Lucid_Gallery_Lightbox {
 		$float = is_rtl() ? 'right' : 'left';
 
 		$size_class = sanitize_html_class( $size );
-		$gallery_div = "<div id=\"gallery-{$instance}\" class=\"gallery galleryid-{$id} gallery-columns-{$columns} gallery-size-{$size_class}\">";
+		$gallery_div = "<div id=\"gallery-{$instance}\" class=\"gallery {$this->_gallery_class} galleryid-{$id} gallery-columns-{$columns} gallery-size-{$size_class}\">";
 		$output = $gallery_div;
 
 		$include_title = apply_filters( 'lgljl_include_image_title', false );
@@ -280,7 +341,7 @@ class Lucid_Gallery_Lightbox {
 		$i = 0;
 		foreach ( $attachments as $id => $attachment ) :
 			$image = wp_get_attachment_image( $id, $size );
-			$url = wp_get_attachment_image_src( $id, apply_filters( 'lgljl_large_image_size', 'large' ) );
+			$url = wp_get_attachment_image_src( $id, $large_image_size );
 			$url = $url[0];
 			$title = ( $include_title ) ? esc_attr( $attachment->post_title ) : '';
 			$description = esc_attr( $attachment->post_content );
@@ -305,4 +366,19 @@ class Lucid_Gallery_Lightbox {
 
 		return $output;
 	}
+}
+
+/**
+ * Use to initalize the lightbox on a page.
+ *
+ * This can be used if a lightbox i desired for something else than the default
+ * gallery. Just call this somewhere before wp_footer and use the proper HTML;
+ * add .lgljl-gallery to a container and filter the delegate selector with the
+ * lgljl_delegate_selector filter if necessary.
+ *
+ * @since 2.1.0
+ */
+function lgljl_do_lightbox() {
+	global $lucid_gallery_lightbox;
+	$lucid_gallery_lightbox->setup_lightbox();
 }
