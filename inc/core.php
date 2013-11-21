@@ -90,7 +90,7 @@ class Lucid_Gallery_Lightbox {
 		<script>(function($, win) {
 			'use strict';
 
-			var $textarea = $('textarea'),
+			var $emptyDiv = $('<div></div>'),
 			options = {
 				delegate: 'a',
 				type: 'image',
@@ -106,16 +106,29 @@ class Lucid_Gallery_Lightbox {
 				image: {
 					tError: "<?php _e( '<a href=\"%url%\">The image</a> could not be loaded.', 'lgljl' ); ?>",
 					titleSrc: function(item) {
-						var content = $textarea.html( item.el.data( 'desc' ) ).text();
+						var title = item.el.attr( 'title' ),
+						    desc = item.el.data( 'desc' ),
+						    ret = '';
 
-						return '<div class="lightbox-title">' + item.el.attr( 'title' ) + '</div>' +
-						       '<div class="lightbox-content">' + content + '</div>';
+						if ( title ) {
+							ret += '<div class="lgljl-title">' + sanitizeText( title ) + '</div>';
+						}
+
+						if ( desc ) {
+							ret += '<div class="lgljl-desc">' + sanitizeText( desc ) + '</div>';
+						}
+
+						return ret;
 					}
 				},
 				ajax: {
 					tError: "<?php _e( '<a href=\"%url%\">The content</a> could not be loaded.', 'lgljl' ); ?>"
 				}
 			};
+
+			function sanitizeText( text ) {
+				return $emptyDiv.text( text ).html();
+			}
 
 			<?php if ( $separate_galleries ) : ?>
 				$('.gallery').each(function() {
@@ -261,14 +274,18 @@ class Lucid_Gallery_Lightbox {
 		$gallery_div = "<div id=\"gallery-{$instance}\" class=\"gallery galleryid-{$id} gallery-columns-{$columns} gallery-size-{$size_class}\">";
 		$output = $gallery_div;
 
+		$include_title = apply_filters( 'lgljl_include_image_title', false );
+		$large_image_size = apply_filters( 'lgljl_large_image_size', 'large' );
+
 		$i = 0;
 		foreach ( $attachments as $id => $attachment ) :
 			$image = wp_get_attachment_image( $id, $size );
 			$url = wp_get_attachment_image_src( $id, apply_filters( 'lgljl_large_image_size', 'large' ) );
 			$url = $url[0];
-			$title = esc_attr( $attachment->post_content );
+			$title = ( $include_title ) ? esc_attr( $attachment->post_title ) : '';
+			$description = esc_attr( $attachment->post_content );
 
-			$link = "<a href=\"{$url}\" title=\"{$title}\" class=\"gallery-item-{$instance}\">{$image}</a>";
+			$link = "<a href=\"{$url}\" title=\"{$title}\" data-desc=\"{$description}\" class=\"gallery-item-{$instance} {$this->_gallery_item_class}\">{$image}</a>";
 
 			$output .= "<{$itemtag} class='gallery-item'>";
 			$output .= "\n<{$icontag} class='gallery-icon'>$link</{$icontag}>";
