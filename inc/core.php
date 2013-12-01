@@ -62,7 +62,7 @@ class Lucid_Gallery_Lightbox {
 	public function __construct( $file ) {
 		self::$plugin_file = $file;
 
-		add_action( 'init', array( $this, 'load_translation' ), 1 );
+		add_action( 'init', array( $this, 'load_translation' ) );
 		add_filter( 'post_gallery', array( $this, 'gallery_shortcode' ), 10, 2 );
 		add_filter( 'wp_enqueue_scripts', array( $this, 'load_assets' ) );
 		add_action( 'wp_head', array( $this, 'lightbox_filtering' ), 999 );
@@ -139,17 +139,22 @@ class Lucid_Gallery_Lightbox {
 	/**
 	 * Initialize the lightbox in the footer.
 	 *
+	 * Prints directly to the footer to save a request, since the script is less
+	 * than 700 bytes in size.
+	 *
 	 * @since 2.0.1
 	 */
 	public function lightbox_init() {
 		if ( ! apply_filters( 'lgljl_init_lightbox', true ) ) return;
 
 		$separate_galleries = apply_filters( 'lgljl_separate_galleries', false );
+		$sanitize_caption = ( apply_filters( 'lgljl_sanitize_caption_html', true ) ) ? 'true' : 'false';
 
-		// Don't output, minified is used below
+		// Don't output, minified is used below.
+		// Passing sanitizeCaption in the IIFE to stop minifier from converting it.
 		if ( false ) : ?>
 
-		<script>(function($, win) {
+		<script>(function($, win, sanitizeCaption) {
 			'use strict';
 
 			var $emptyDiv = $('<div></div>'),
@@ -173,11 +178,17 @@ class Lucid_Gallery_Lightbox {
 						    ret = '';
 
 						if ( title ) {
-							ret += '<div class="lgljl-title">' + sanitizeText( title ) + '</div>';
+							if ( sanitizeCaption ) {
+								title = sanitizeText( title );
+							}
+							ret += '<div class="lgljl-title">' + title + '</div>';
 						}
 
 						if ( desc ) {
-							ret += '<div class="lgljl-desc">' + sanitizeText( desc ) + '</div>';
+							if ( sanitizeCaption ) {
+								desc = sanitizeText( desc );
+							}
+							ret += '<div class="lgljl-desc">' + desc + '</div>';
 						}
 
 						return ret;
@@ -200,13 +211,14 @@ class Lucid_Gallery_Lightbox {
 				$('.<?php echo $this->_gallery_class; ?>').magnificPopup( options );
 			<?php endif; ?>
 
-		}(jQuery, window));</script>
+		}(jQuery, window, <?php echo $sanitize_caption; ?>));</script>
 
 		<?php
-		// Output minified. Remove PHP conditional from above to stop minifier
-		// from choking and re-insert it manually.
+
+		// Output minified. Quote the 'free' php tags (add semicolons if needed)
+		// to stop minifier from choking and un-quote when done.
 		else : ?>
-		<script>(function(a,f){var d=a("<div></div>"),e={delegate:".<?php echo $this->_gallery_item_class; ?>",type:"<?php echo apply_filters( 'lgljl_gallery_type', 'image' ); ?>",disableOn:0,tClose:"<?php _e( 'Close (Esc)', 'lgljl' ); ?>",tLoading:"<?php _e( 'Loading...', 'lgljl' ); ?>",gallery:{enabled:!0,tPrev:"<?php _e( 'Previous (Left arrow key)', 'lgljl' ); ?>",tNext:"<?php _e( 'Next (Right arrow key)', 'lgljl' ); ?>",tCounter:"<?php _e( '%curr% of %total%', 'lgljl' ); ?>"},image:{tError:"<?php _e( '<a href=\"%url%\">The image</a> could not be loaded.', 'lgljl' ); ?>",titleSrc:function(b){var a=b.el.attr("title");b=b.el.data("desc");var c="";a&&(c+='<div class="lgljl-title">'+d.text(a).html()+"</div>");b&&(c+='<div class="lgljl-desc">'+d.text(b).html()+"</div>");return c}},ajax:{tError:"<?php _e( '<a href=\"%url%\">The content</a> could not be loaded.', 'lgljl' ); ?>"}};<?php if ( $separate_galleries ) : ?>a(".<?php echo $this->_gallery_class; ?>").each(function(){a(this).magnificPopup(e)})<?php else : ?>a(".<?php echo $this->_gallery_class; ?>").magnificPopup(e)<?php endif; ?>})(jQuery,window);</script>
+		<script>(function(a,g,d){var e=a("<div></div>"),f={delegate:".<?php echo $this->_gallery_item_class; ?>",type:"<?php echo apply_filters( 'lgljl_gallery_type', 'image' ); ?>",disableOn:0,tClose:"<?php _e( 'Close (Esc)', 'lgljl' ); ?>",tLoading:"<?php _e( 'Loading...', 'lgljl' ); ?>",gallery:{enabled:!0,tPrev:"<?php _e( 'Previous (Left arrow key)', 'lgljl' ); ?>",tNext:"<?php _e( 'Next (Right arrow key)', 'lgljl' ); ?>",tCounter:"<?php _e( '%curr% of %total%', 'lgljl' ); ?>"},image:{tError:"<?php _e( '<a href=\"%url%\">The image</a> could not be loaded.', 'lgljl' ); ?>", titleSrc:function(b){var a=b.el.attr("title");b=b.el.data("desc");var c="";a&&(d&&(a=e.text(a).html()),c+='<div class="lgljl-title">'+a+"</div>");b&&(d&&(b=e.text(b).html()),c+='<div class="lgljl-desc">'+b+"</div>");return c}},ajax:{tError:"<?php _e( '<a href=\"%url%\">The content</a> could not be loaded.', 'lgljl' ); ?>"}};<?php if ( $separate_galleries ) : ?>a(".<?php echo $this->_gallery_class; ?>").each(function(){a(this).magnificPopup(f)});<?php else : ?>a(".<?php echo $this->_gallery_class; ?>").magnificPopup(f);<?php endif; ?>})(jQuery,window,<?php echo $sanitize_caption; ?>);</script>
 		<?php endif;
 	}
 
