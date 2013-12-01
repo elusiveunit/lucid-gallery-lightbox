@@ -83,6 +83,14 @@ Whether to load a separate lightbox instance for every gallery. This basically d
 
 -----
 
+**lgljl\_sanitize\_caption\_html**
+
+By default, HTML tags inside the lightbox captions (the `title` and `data-desc` attributes) will be output as text. Setting this to false will insert the content as is.
+
+	add_filter( 'lgljl_sanitize_caption_html', '__return_false' );
+
+-----
+
 **lgljl\_gallery\_class** and **lgljl\_gallery\_item\_class**
 
 Filter the HTML classes used as jQuery selectors. The gallery class is used for initializing the the lightbox, while the gallery item is used as a delegate selector. Defaults to `lgljl-gallery` and `lgljl-gallery-item` respectively.
@@ -151,6 +159,10 @@ Whether to include the image (attachment) title in the lightbox caption. Default
 -----
 
 ## Changelog
+
+### 2.1.1: Dec 01, 2013
+
+* New: Add `lgljl_sanitize_caption_html` filter, to allow HTML in lightbox captions.
 
 ### 2.1.0: Nov 21, 2013
 

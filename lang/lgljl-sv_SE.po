@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Lucid Gallery Lightbox v2.0.0\n"
+"Project-Id-Version: Lucid Gallery Lightbox v2.1.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: 2013-08-13 19:16:23+0000\n"
@@ -92,6 +92,6 @@ msgstr ""
 #. translators: plugin header field 'Version'
 #: lucid-gallery-lightbox.php:0
 #@ lgljl
-msgid "2.0.0"
+msgid "2.1.1"
 msgstr ""
 
