@@ -19,10 +19,12 @@
 if ( ! defined( 'ABSPATH' ) ) die( 'Nope' );
 
 // Symlink workaround, see http://core.trac.wordpress.org/ticket/16953
+// The root check is to stop a fatal error on activation
 $lgljl_plugin_file = __FILE__;
-if ( isset( $plugin ) )
+$lgljl_document_root = str_replace( array( '\\', '/' ), DIRECTORY_SEPARATOR, $_SERVER['DOCUMENT_ROOT'] );
+if ( isset( $plugin ) && false !== strpos( $plugin, $lgljl_document_root ) )
 	$lgljl_plugin_file = $plugin;
-elseif ( isset( $network_plugin ) )
+elseif ( isset( $network_plugin ) && false !== strpos( $network_plugin, $lgljl_document_root ) )
 	$lgljl_plugin_file = $network_plugin;
 
 // Plugin constants
