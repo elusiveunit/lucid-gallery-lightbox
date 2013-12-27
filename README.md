@@ -65,7 +65,7 @@ _Exists as both a function and a filter._
 
 By default, the lightbox JavaScript is only added if a page has a gallery. These can be used to add it to any page, in case you want to use it on something else as well.
 
-**Note:** The container for any custom lightbox use must have the class name `lgljl-gallery`
+**Note:** The container for any custom lightbox use must have the class name `lgljl-gallery` (filterable).
 
 	// Before wp_head
 	add_filter( 'lgljl_do_lightbox', '__return_true' );
@@ -150,6 +150,23 @@ Name of image size to use for the magnified/lightboxed image. Defaults to `'larg
 
 -----
 
+**lgljl\_default\_thumbnail\_size**
+
+Name of image size to use for the gallery thumbnail images. Defaults to `'thumbnail'`.
+
+	/**
+	 * Set the default gallery thumbnail size used in Lucid Gallery Lightbox.
+	 *
+	 * @param string $default_size The default image size set in the plugin.
+	 * @return string The new image size.
+	 */
+	function my_prefix_set_gallery_thumb_size( $default_size ) {
+		return 'medium';
+	}
+	add_filter( 'lgljl_default_thumbnail_size', 'my_prefix_set_gallery_thumb_size' );
+
+-----
+
 **lgljl\_include\_image\_title**
 
 Whether to include the image (attachment) title in the lightbox caption. Defaults to false, since the title on attachment are often just the file names if left unchanged.
@@ -159,6 +176,12 @@ Whether to include the image (attachment) title in the lightbox caption. Default
 -----
 
 ## Changelog
+
+### 2.2.0: Dec 10, 2013
+
+* New: Add `lgljl_default_thumbnail_size` filter, to control the default thumbnail image size.
+* Tweak: The Magnific Popup options are now printed as a global LGLJL\_OPTIONS object. This is done in the footer before enqueued scripts are printed, so the options can be modified via JavaScript, instead of having to replace them completely when doing something custom.
+* Tweak/fix: Include [this](https://gist.github.com/aubreypwd/7828624) temporary workaround for the issue with `__FILE__` in symlinked plugins, see [trac ticket #16953](http://core.trac.wordpress.org/ticket/16953).
 
 ### 2.1.1: Dec 01, 2013
 
