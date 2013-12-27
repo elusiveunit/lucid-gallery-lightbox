@@ -84,9 +84,9 @@ class Lucid_Gallery_Lightbox {
 
 		// JavaScript
 		if ( apply_filters( 'lgljl_load_included_js', true ) ) :
-			$version = ( apply_filters( 'lgljl_use_custom_js_build', true ) ) ? '-build.min' : '.min';
+			$build = ( apply_filters( 'lgljl_use_custom_js_build', true ) ) ? '-build.min' : '.min';
 
-			wp_register_script( 'lgljl-magnific-popup', LGLJL_PLUGIN_URL . "js/jquery.magnific-popup{$version}.js", array( 'jquery-core' ), LGLJL_VERSION, true );
+			wp_register_script( 'lgljl-magnific-popup', LGLJL_PLUGIN_URL . "js/jquery.magnific-popup{$build}.js", array( 'jquery-core' ), LGLJL_VERSION, true );
 
 			// Add script enqueue and init here if not using custom output.
 			// Otherwise it's handled on demand in the shortcode function.
@@ -129,34 +129,28 @@ class Lucid_Gallery_Lightbox {
 			return;
 
 		wp_enqueue_script( 'lgljl-magnific-popup' );
-		add_action( 'wp_footer', array( $this, 'lightbox_init' ), 999 );
+		add_action( 'wp_footer', array( $this, 'lightbox_options' ), 5 );
+		add_action( 'wp_footer', array( $this, 'lightbox_init' ), 500 );
 
 		self::$_is_setup_done = true;
 	}
 
 	/**
-	 * Initialize the lightbox in the footer.
+	 * Print the lightbox options object as a global.
 	 *
-	 * Prints directly to the footer to save a request, since the script is less
-	 * than 700 bytes in size.
+	 * This is printed with a high priority in the footer, so it comes before
+	 * enqueued scripts (which are done at 20). This makes it available for
+	 * manipulation through JavaScript before the lightbox is initialized.
 	 *
-	 * @since 2.0.1
+	 * @since 2.2.0
 	 */
-	public function lightbox_init() {
+	public function lightbox_options() {
 		if ( ! apply_filters( 'lgljl_init_lightbox', true ) ) return;
 
-		$separate_galleries = apply_filters( 'lgljl_separate_galleries', false );
-		$sanitize_caption = ( apply_filters( 'lgljl_sanitize_caption_html', true ) ) ? 'true' : 'false';
-
 		// Don't output, minified is used below.
-		// Passing sanitizeCaption in the IIFE to stop minifier from converting it.
 		if ( false ) : ?>
-
-		<script>(function($, win, sanitizeCaption) {
-			'use strict';
-
-			var $emptyDiv = $('<div></div>'),
-			options = {
+		<script>
+			var LGLJL_OPTIONS = {
 				delegate: ".<?php echo $this->_gallery_item_class; ?>",
 				type: "<?php echo apply_filters( 'lgljl_gallery_type', 'image' ); ?>",
 				disableOn: 0,
@@ -169,54 +163,92 @@ class Lucid_Gallery_Lightbox {
 					tCounter: "<?php _e( '%curr% of %total%', 'lgljl' ); ?>"
 				},
 				image: {
-					tError: "<?php _e( '<a href=\"%url%\">The image</a> could not be loaded.', 'lgljl' ); ?>",
-					titleSrc: function(item) {
-						var title = item.el.attr( 'title' ),
-						    desc = item.el.data( 'desc' ),
-						    ret = '';
-
-						if ( title ) {
-							if ( sanitizeCaption ) {
-								title = sanitizeText( title );
-							}
-							ret += '<div class="lgljl-title">' + title + '</div>';
-						}
-
-						if ( desc ) {
-							if ( sanitizeCaption ) {
-								desc = sanitizeText( desc );
-							}
-							ret += '<div class="lgljl-desc">' + desc + '</div>';
-						}
-
-						return ret;
-					}
+					tError: "<?php _e( '<a href=\"%url%\">The image</a> could not be loaded.', 'lgljl' ); ?>"
 				},
 				ajax: {
 					tError: "<?php _e( '<a href=\"%url%\">The content</a> could not be loaded.', 'lgljl' ); ?>"
 				}
 			};
+		</script>
 
-			function sanitizeText( text ) {
-				return $emptyDiv.text( text ).html();
-			}
+		<?php else : ?>
+		<script>var LGLJL_OPTIONS={delegate:".<?php echo $this->_gallery_item_class; ?>",type:"<?php echo apply_filters( 'lgljl_gallery_type', 'image' ); ?>",disableOn:0,tClose:"<?php _e( 'Close (Esc)', 'lgljl' ); ?>",tLoading:"<?php _e( 'Loading...', 'lgljl' ); ?>",gallery:{enabled:!0,tPrev:"<?php _e( 'Previous (Left arrow key)', 'lgljl' ); ?>",tNext:"<?php _e( 'Next (Right arrow key)', 'lgljl' ); ?>",tCounter:"<?php _e( '%curr% of %total%', 'lgljl' ); ?>"},image:{tError:"<?php _e( '<a href=\"%url%\">The image</a> could not be loaded.', 'lgljl' ); ?>"},ajax:{tError:"<?php _e( '<a href=\"%url%\">The content</a> could not be loaded.', 'lgljl' ); ?>"}};</script>
+		<?php endif;
+	}
 
-			<?php if ( $separate_galleries ) : ?>
-				$('.<?php echo $this->_gallery_class; ?>').each(function() {
-					$(this).magnificPopup( options );
-				});
-			<?php else : ?>
-				$('.<?php echo $this->_gallery_class; ?>').magnificPopup( options );
-			<?php endif; ?>
+	/**
+	 * Initialize the lightbox in the footer.
+	 *
+	 * Prints directly to the footer to save a request, since the script is less
+	 * than 800 bytes in size.
+	 *
+	 * @since 2.0.1
+	 */
+	public function lightbox_init() {
+		if ( ! apply_filters( 'lgljl_init_lightbox', true ) ) return;
 
-		}(jQuery, window, <?php echo $sanitize_caption; ?>));</script>
+		$separate_galleries = apply_filters( 'lgljl_separate_galleries', false );
+		$sanitize_caption = ( apply_filters( 'lgljl_sanitize_caption_html', true ) ) ? 'true' : 'false';
+
+		/*
+		 * Don't output, minified is used below.
+		 * Using an IIFE for sanitizeCaption to stop minifier from converting it,
+		 * might as well include the global options in it. Also using jQuery DOM
+		 * ready, so external scripts running on that event can manipulate the
+		 * options.
+		 */
+		if ( false ) : ?>
+
+		<script>(function (options, sanitizeCaption) {
+			jQuery(function ($) {
+				'use strict';
+
+				var $emptyDiv = $('<div></div>');
+
+				// This function is dependant on jQuery, so it can't be set above
+				options.image.titleSrc = function(item) {
+					var title = item.el.attr( 'title' ),
+					    desc = item.el.data( 'desc' ),
+					    ret = '';
+
+					if ( title ) {
+						if ( sanitizeCaption ) {
+							title = sanitizeText( title );
+						}
+						ret += '<div class="lgljl-title">' + title + '</div>';
+					}
+
+					if ( desc ) {
+						if ( sanitizeCaption ) {
+							desc = sanitizeText( desc );
+						}
+						ret += '<div class="lgljl-desc">' + desc + '</div>';
+					}
+
+					return ret;
+				}
+
+				// Sanitize HTML characters
+				function sanitizeText( text ) {
+					return $emptyDiv.text( text ).html();
+				}
+
+				<?php if ( $separate_galleries ) : ?>
+					$('.<?php echo $this->_gallery_class; ?>').each(function() {
+						$(this).magnificPopup( options );
+					});
+				<?php else : ?>
+					$('.<?php echo $this->_gallery_class; ?>').magnificPopup( options );
+				<?php endif; ?>
+			});
+		}(LGLJL_OPTIONS, <?php echo $sanitize_caption; ?>));</script>
 
 		<?php
 
 		// Output minified. Quote the 'free' php tags (add semicolons if needed)
 		// to stop minifier from choking and un-quote when done.
 		else : ?>
-		<script>(function(a,g,d){var e=a("<div></div>"),f={delegate:".<?php echo $this->_gallery_item_class; ?>",type:"<?php echo apply_filters( 'lgljl_gallery_type', 'image' ); ?>",disableOn:0,tClose:"<?php _e( 'Close (Esc)', 'lgljl' ); ?>",tLoading:"<?php _e( 'Loading...', 'lgljl' ); ?>",gallery:{enabled:!0,tPrev:"<?php _e( 'Previous (Left arrow key)', 'lgljl' ); ?>",tNext:"<?php _e( 'Next (Right arrow key)', 'lgljl' ); ?>",tCounter:"<?php _e( '%curr% of %total%', 'lgljl' ); ?>"},image:{tError:"<?php _e( '<a href=\"%url%\">The image</a> could not be loaded.', 'lgljl' ); ?>", titleSrc:function(b){var a=b.el.attr("title");b=b.el.data("desc");var c="";a&&(d&&(a=e.text(a).html()),c+='<div class="lgljl-title">'+a+"</div>");b&&(d&&(b=e.text(b).html()),c+='<div class="lgljl-desc">'+b+"</div>");return c}},ajax:{tError:"<?php _e( '<a href=\"%url%\">The content</a> could not be loaded.', 'lgljl' ); ?>"}};<?php if ( $separate_galleries ) : ?>a(".<?php echo $this->_gallery_class; ?>").each(function(){a(this).magnificPopup(f)});<?php else : ?>a(".<?php echo $this->_gallery_class; ?>").magnificPopup(f);<?php endif; ?>})(jQuery,window,<?php echo $sanitize_caption; ?>);</script>
+		<script>(function(d,e){jQuery(function(a){var f=a("<div></div>");d.image.titleSrc=function(b){var a=b.el.attr("title");b=b.el.data("desc");var c="";a&&(e&&(a=f.text(a).html()),c+='<div class="lgljl-title">'+a+"</div>");b&&(e&&(b=f.text(b).html()),c+='<div class="lgljl-desc">'+b+"</div>");return c};<?php if ( $separate_galleries ) : ?>a(".<?php echo $this->_gallery_class; ?>").each(function(){a(this).magnificPopup(d)});<?php else : ?>a(".<?php echo $this->_gallery_class; ?>").magnificPopup(d)<?php endif; ?>})})(LGLJL_OPTIONS,<?php echo $sanitize_caption; ?>);</script>
 		<?php endif;
 	}
 
