@@ -11,8 +11,7 @@
  * Text Domain: lgljl
  * Domain Path: /lang
  *
- * @package Lucid
- * @subpackage GalleryLightbox
+ * @package Lucid\GalleryLightbox
  */
 
 // Block direct requests

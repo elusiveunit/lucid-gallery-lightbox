@@ -2,8 +2,7 @@
 /**
  * Load assets and use custom shortcode output.
  *
- * @package Lucid
- * @subpackage GalleryLightbox
+ * @package Lucid\GalleryLightbox
  */
 
 // Block direct requests
@@ -12,8 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) die( 'Nope' );
 /**
  * Lightbox setup and gallery shortcode output, all filterable.
  *
- * @package Lucid
- * @subpackage GalleryLightbox
+ * @package Lucid\GalleryLightbox
  */
 class Lucid_Gallery_Lightbox {
 
