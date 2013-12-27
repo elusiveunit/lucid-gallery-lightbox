@@ -270,7 +270,7 @@ class Lucid_Gallery_Lightbox {
 			'icontag'    => 'div',
 			'captiontag' => 'figcaption',
 			'columns'    => 3,
-			'size'       => 'thumbnail',
+			'size'       => apply_filters( 'lgljl_default_thumbnail_size', 'thumbnail' ),
 			'include'    => '',
 			'exclude'    => ''
 		), $attr ) );
