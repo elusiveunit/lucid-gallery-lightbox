@@ -87,12 +87,6 @@ class Lucid_Gallery_Lightbox {
 			$build = ( apply_filters( 'lgljl_use_custom_js_build', true ) ) ? '-build.min' : '.min';
 
 			wp_register_script( 'lgljl-magnific-popup', LGLJL_PLUGIN_URL . "js/jquery.magnific-popup{$build}.js", array( 'jquery-core' ), LGLJL_VERSION, true );
-
-			// Add script enqueue and init here if not using custom output.
-			// Otherwise it's handled on demand in the shortcode function.
-			if ( ! apply_filters( 'lgljl_html5_shortcode_output', true ) ) :
-				$this->setup_lightbox();
-			endif;
 		endif;
 
 		// CSS
@@ -267,7 +261,6 @@ class Lucid_Gallery_Lightbox {
 	 * @return string Gallery HTML.
 	 */
 	public function gallery_shortcode( $output, $attr ) {
-		if ( ! apply_filters( 'lgljl_html5_shortcode_output', true ) ) return false;
 
 		// Load script and init
 		$this->setup_lightbox();
