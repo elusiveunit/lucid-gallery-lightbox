@@ -265,7 +265,7 @@ class Lucid_Gallery_Lightbox {
 	 * @return string Gallery HTML.
 	 */
 	public function gallery_shortcode( $output, $attr ) {
-		if ( ! apply_filters( 'lgljl_html5_shortcode_output', true ) ) return;
+		if ( ! apply_filters( 'lgljl_html5_shortcode_output', true ) ) return false;
 
 		// Load script and init
 		$this->setup_lightbox();
@@ -292,7 +292,7 @@ class Lucid_Gallery_Lightbox {
 				unset( $attr['orderby'] );
 		endif;
 
-		extract( shortcode_atts( array(
+		$atts = shortcode_atts( array(
 			'order'      => 'ASC',
 			'orderby'    => 'menu_order ID',
 			'id'         => $post->ID,
@@ -303,36 +303,36 @@ class Lucid_Gallery_Lightbox {
 			'size'       => apply_filters( 'lgljl_default_thumbnail_size', 'thumbnail' ),
 			'include'    => '',
 			'exclude'    => ''
-		), $attr ) );
+		), $attr );
 
-		$id = intval( $id );
+		$id = intval( $atts['id'] );
 
-		if ( 'RAND' == $order )
-			$orderby = 'none';
+		if ( 'RAND' == $atts['order'] )
+			$atts['orderby'] = 'none';
 
-		if ( ! empty( $include ) ) :
+		if ( ! empty( $atts['include'] ) ) :
 			$_attachments = get_posts( array(
-				'include' => $include,
+				'include' => $atts['include'],
 				'post_status' => 'inherit',
 				'post_type' => 'attachment',
 				'post_mime_type' => 'image',
-				'order' => $order,
-				'orderby' => $orderby
+				'order' => $atts['order'],
+				'orderby' => $atts['orderby']
 			) );
 
 			$attachments = array();
 			foreach ( $_attachments as $key => $val )
 				$attachments[$val->ID] = $_attachments[$key];
 
-		elseif ( ! empty( $exclude ) ) :
+		elseif ( ! empty( $atts['exclude'] ) ) :
 			$attachments = get_children( array(
 				'post_parent' => $id,
-				'exclude' => $exclude,
+				'exclude' => $atts['exclude'],
 				'post_status' => 'inherit',
 				'post_type' => 'attachment',
 				'post_mime_type' => 'image',
-				'order' => $order,
-				'orderby' => $orderby
+				'order' => $atts['order'],
+				'orderby' => $atts['orderby']
 			) );
 
 		else :
@@ -341,8 +341,8 @@ class Lucid_Gallery_Lightbox {
 				'post_status' => 'inherit',
 				'post_type' => 'attachment',
 				'post_mime_type' => 'image',
-				'order' => $order,
-				'orderby' => $orderby
+				'order' => $atts['order'],
+				'orderby' => $atts['orderby']
 			) );
 		endif;
 
@@ -352,14 +352,14 @@ class Lucid_Gallery_Lightbox {
 		if ( is_feed() ) :
 			$output = "\n";
 			foreach ( $attachments as $att_id => $attachment )
-				$output .= wp_get_attachment_link( $att_id, $size, true ) . "\n";
+				$output .= wp_get_attachment_link( $att_id, $atts['size'], true ) . "\n";
 
 			return $output;
 		endif;
 
-		$itemtag = tag_escape( $itemtag );
-		$captiontag = tag_escape( $captiontag );
-		$icontag = tag_escape( $icontag );
+		$itemtag = tag_escape( $atts['itemtag'] );
+		$captiontag = tag_escape( $atts['captiontag'] );
+		$icontag = tag_escape( $atts['icontag'] );
 		$valid_tags = wp_kses_allowed_html( 'post' );
 
 		if ( ! isset( $valid_tags[ $itemtag ] ) )
@@ -369,11 +369,11 @@ class Lucid_Gallery_Lightbox {
 		if ( ! isset( $valid_tags[ $captiontag ] ) )
 			$captiontag = 'figcaption';
 
-		$columns = intval( $columns );
+		$columns = intval( $atts['columns'] );
 		$itemwidth = $columns > 0 ? floor( 100 / $columns ) : 100;
 		$float = is_rtl() ? 'right' : 'left';
 
-		$size_class = sanitize_html_class( $size );
+		$size_class = sanitize_html_class( $atts['size'] );
 		$gallery_div = "<div id=\"gallery-{$instance}\" class=\"gallery {$this->_gallery_class} galleryid-{$id} gallery-columns-{$columns} gallery-size-{$size_class}\">";
 		$output = $gallery_div;
 
@@ -384,20 +384,20 @@ class Lucid_Gallery_Lightbox {
 
 		$i = 0;
 		foreach ( $attachments as $id => $attachment ) :
-			$image = wp_get_attachment_image( $id, $size );
+			$image = wp_get_attachment_image( $id, $atts['size'] );
 			$url = '';
 
-			if ( $force_image_link || 'file' == $link ) :
+			if ( $force_image_link || 'file' == $atts['link'] ) :
 				$url = wp_get_attachment_image_src( $id, $large_image_size );
 				$url = ( ! empty( $url[0] ) ) ? $url[0] : '';
-			elseif ( 'none' != $link ) :
+			elseif ( 'none' != $atts['link'] ) :
 				$url = get_attachment_link( $id );
 			endif;
 
 			$title = ( $include_title ) ? esc_attr( apply_filters( 'lgljl_caption_title', $attachment->post_title, $attachment ) ) : '';
 			$description = ( $include_desc ) ? esc_attr( apply_filters( 'lgljl_caption_text', $attachment->post_content, $attachment ) ) : '';
 
-			if ( $url && ( $force_image_link || 'file' == $link ) )
+			if ( $url && ( $force_image_link || 'file' == $atts['link'] ) )
 				$item = "<a href=\"{$url}\" title=\"{$title}\" data-desc=\"{$description}\" class=\"gallery-item-{$instance} {$this->_gallery_item_class}\">{$image}</a>";
 			elseif ( $url )
 				$item = "<a href=\"{$url}\" title=\"{$title}\" class=\"gallery-item-{$instance}\">{$image}</a>";
