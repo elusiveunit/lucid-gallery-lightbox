@@ -147,10 +147,9 @@ class Lucid_Gallery_Lightbox {
 	public function lightbox_options() {
 		if ( ! apply_filters( 'lgljl_init_lightbox', true ) ) return;
 
-		// Don't output, minified is used below.
-		if ( false ) : ?>
+		ob_start(); ?>
 		<script>
-			var LGLJL_OPTIONS = {
+			var LGLJL_OPTIONS={
 				delegate: ".<?php echo $this->_gallery_item_class; ?>",
 				type: "<?php echo apply_filters( 'lgljl_gallery_type', 'image' ); ?>",
 				disableOn: 0,
@@ -170,10 +169,13 @@ class Lucid_Gallery_Lightbox {
 				}
 			};
 		</script>
+		<?php $script = ob_get_clean();
 
-		<?php else : ?>
-		<script>var LGLJL_OPTIONS={delegate:".<?php echo $this->_gallery_item_class; ?>",type:"<?php echo apply_filters( 'lgljl_gallery_type', 'image' ); ?>",disableOn:0,tClose:"<?php _e( 'Close (Esc)', 'lgljl' ); ?>",tLoading:"<?php _e( 'Loading...', 'lgljl' ); ?>",gallery:{enabled:!0,tPrev:"<?php _e( 'Previous (Left arrow key)', 'lgljl' ); ?>",tNext:"<?php _e( 'Next (Right arrow key)', 'lgljl' ); ?>",tCounter:"<?php _e( '%curr% of %total%', 'lgljl' ); ?>"},image:{tError:"<?php _e( '<a href=\"%url%\">The image</a> could not be loaded.', 'lgljl' ); ?>"},ajax:{tError:"<?php _e( '<a href=\"%url%\">The content</a> could not be loaded.', 'lgljl' ); ?>"}};</script>
-		<?php endif;
+		// Some unnecessary minification, for my own satisfaction
+		$script = str_replace( array( "\n", "\r", "\t" ), '', $script );
+		$script = preg_replace( '/: (?=["0t{])/', ':', $script );
+
+		echo $script . "\n";
 	}
 
 	/**
