@@ -380,22 +380,35 @@ class Lucid_Gallery_Lightbox {
 		$include_title = apply_filters( 'lgljl_include_image_title', false );
 		$include_desc = apply_filters( 'lgljl_include_image_description', true );
 		$large_image_size = apply_filters( 'lgljl_large_image_size', 'large' );
+		$force_image_link = apply_filters( 'lgljl_force_image_link', true, $atts );
 
 		$i = 0;
 		foreach ( $attachments as $id => $attachment ) :
 			$image = wp_get_attachment_image( $id, $size );
-			$url = wp_get_attachment_image_src( $id, $large_image_size );
-			$url = $url[0];
+			$url = '';
+
+			if ( $force_image_link || 'file' == $link ) :
+				$url = wp_get_attachment_image_src( $id, $large_image_size );
+				$url = ( ! empty( $url[0] ) ) ? $url[0] : '';
+			elseif ( 'none' != $link ) :
+				$url = get_attachment_link( $id );
+			endif;
+
 			$title = ( $include_title ) ? esc_attr( apply_filters( 'lgljl_caption_title', $attachment->post_title, $attachment ) ) : '';
 			$description = ( $include_desc ) ? esc_attr( apply_filters( 'lgljl_caption_text', $attachment->post_content, $attachment ) ) : '';
 
-			$link = "<a href=\"{$url}\" title=\"{$title}\" data-desc=\"{$description}\" class=\"gallery-item-{$instance} {$this->_gallery_item_class}\">{$image}</a>";
+			if ( $url && ( $force_image_link || 'file' == $link ) )
+				$item = "<a href=\"{$url}\" title=\"{$title}\" data-desc=\"{$description}\" class=\"gallery-item-{$instance} {$this->_gallery_item_class}\">{$image}</a>";
+			elseif ( $url )
+				$item = "<a href=\"{$url}\" title=\"{$title}\" class=\"gallery-item-{$instance}\">{$image}</a>";
+			else
+				$item = $image;
 
-			$output .= "<{$itemtag} class='gallery-item'>";
-			$output .= "\n<{$icontag} class='gallery-icon'>$link</{$icontag}>";
+			$output .= "<{$itemtag} class=\"gallery-item\">";
+			$output .= "\n<{$icontag} class=\"gallery-icon\">{$item}</{$icontag}>";
 
 			if ( $captiontag && trim( $attachment->post_excerpt ) )
-				$output .= "\n<{$captiontag} class='wp-caption-text gallery-caption'>" . wptexturize( $attachment->post_excerpt ) . "</{$captiontag}>";
+				$output .= "\n<{$captiontag} class=\"wp-caption-text gallery-caption\">" . wptexturize( $attachment->post_excerpt ) . "</{$captiontag}>";
 
 			$output .= "</{$itemtag}>";
 
