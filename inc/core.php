@@ -85,6 +85,7 @@ class Lucid_Gallery_Lightbox {
 		/**
 		 * Filter whether to load the bundled lightbox JavaScript.
 		 *
+		 * @since 1.0.0
 		 * @param bool $load Defaults to true, return false to not load it.
 		 */
 		if ( apply_filters( 'lgljl_load_included_js', true ) ) :
@@ -93,6 +94,7 @@ class Lucid_Gallery_Lightbox {
 			 * Filter whether to load the custom, optimized build of the lightbox
 			 * script.
 			 *
+			 * @since 2.0.0
 			 * @param bool $use_custom Defaults to true, return false to load the
 			 *    full build.
 			 */
@@ -104,6 +106,7 @@ class Lucid_Gallery_Lightbox {
 		/**
 		 * Filter whether to load the bundled lightbox CSS.
 		 *
+		 * @since 1.0.0
 		 * @param bool $load Defaults to true, return false to not load it.
 		 */
 		if ( apply_filters( 'lgljl_load_included_css', true ) )
@@ -126,6 +129,7 @@ class Lucid_Gallery_Lightbox {
 		/**
 		 * Filter the HTML class name used for galleries.
 		 *
+		 * @since 2.1.0
 		 * @param string $gallery_class
 		 */
 		$this->_gallery_class = apply_filters( 'lgljl_gallery_class', $this->_gallery_class );
@@ -133,6 +137,7 @@ class Lucid_Gallery_Lightbox {
 		/**
 		 * Filter the HTML class name used for gallery items.
 		 *
+		 * @since 2.1.0
 		 * @param string $gallery_item_class
 		 */
 		$this->_gallery_item_class = apply_filters( 'lgljl_gallery_item_class', $this->_gallery_item_class );
@@ -145,6 +150,7 @@ class Lucid_Gallery_Lightbox {
 		 * script is used for other parts or for whatever reason it's desired,
 		 * the init can be forced manually with this filter.
 		 *
+		 * @since 2.1.0
 		 * @param bool $init Defaults to false, return true to include the
 		 *    JavaScript.
 		 */
@@ -186,6 +192,7 @@ class Lucid_Gallery_Lightbox {
 		 * LGLJL_OPTIONS object through JavaScript, instead of disabling this
 		 * and adding a custom object.
 		 *
+		 * @since 1.0.0
 		 * @param bool $init Defaults to true, return false to disable.
 		 */
 		if ( ! apply_filters( 'lgljl_init_lightbox', true ) ) return;
@@ -193,6 +200,7 @@ class Lucid_Gallery_Lightbox {
 		/**
 		 * Filter the lightbox 'content type' option.
 		 *
+		 * @since 2.1.0
 		 * @param string $gallery_type Accepts 'image', 'iframe', 'inline', and
 		 *    'ajax'. Defaults to 'image', see Magnific Popup documentation for
 		 *    differences.
@@ -243,6 +251,7 @@ class Lucid_Gallery_Lightbox {
 		/**
 		 * Filter whether to include the JavaScript initialization code.
 		 *
+		 * @since 1.0.0
 		 * @param bool $init Defaults to true, return false to disable.
 		 */
 		if ( ! apply_filters( 'lgljl_init_lightbox', true ) ) return;
@@ -250,6 +259,7 @@ class Lucid_Gallery_Lightbox {
 		/**
 		 * Filter whether to bring up a separate lightbox for each gallery.
 		 *
+		 * @since 2.0.0
 		 * @param bool $do_separate Defaults to false.
 		 */
 		$separate_galleries = apply_filters( 'lgljl_separate_galleries', false );
@@ -262,6 +272,7 @@ class Lucid_Gallery_Lightbox {
 		 * trusting user input, even if they're logged in. Caption text should
 		 * be controlled somehow, if this is disabled.
 		 *
+		 * @since 2.1.1
 		 * @param bool $do_separate Defaults to true, return false to allow HTML.
 		 */
 		$sanitize_caption = ( apply_filters( 'lgljl_sanitize_caption_html', true ) ) ? 'true' : 'false';
@@ -391,6 +402,7 @@ class Lucid_Gallery_Lightbox {
 		/**
 		 * Filter whether to include the title attribute on gallery items.
 		 *
+		 * @since 2.1.0
 		 * @param bool $include_title Defaults to false, return true to include.
 		 * @param array $atts Shortcode attributes, filtered.
 		 */
@@ -400,6 +412,7 @@ class Lucid_Gallery_Lightbox {
 		 * Filter whether to include the caption text (description field) in
 		 * lightbox popups.
 		 *
+		 * @since 2.3.0
 		 * @param bool $include_desc Defaults to true, return false to disable.
 		 * @param array $atts Shortcode attributes, filtered.
 		 */
@@ -408,6 +421,7 @@ class Lucid_Gallery_Lightbox {
 		/**
 		 * Filter the image size used in the lightbox popups.
 		 *
+		 * @since 2.0.0
 		 * @param string $large_image_size Defaults to 'large'.
 		 * @param array $atts Shortcode attributes, filtered.
 		 */
@@ -417,6 +431,7 @@ class Lucid_Gallery_Lightbox {
 		 * Filter whether to force linking directly to the images, regardless
 		 * of gallery setting.
 		 *
+		 * @since 2.3.0
 		 * @param bool $force_image_link Defaults to true, since the lightbox
 		 *    won't trigger otherwise, return false to allow all gallery types.
 		 * @param array $atts Shortcode attributes, filtered.
@@ -438,6 +453,7 @@ class Lucid_Gallery_Lightbox {
 			/**
 			 * Filter gallery item title text.
 			 *
+			 * @since 2.3.0
 			 * @param string $title Defaults to the attachment post title (name).
 			 * @param WP_Post $attachment The attachment post object.
 			 */
@@ -446,6 +462,7 @@ class Lucid_Gallery_Lightbox {
 			/**
 			 * Filter gallery item caption/description text.
 			 *
+			 * @since 2.3.0
 			 * @param string $caption Defaults to the attachment post content
 			 *    (description field).
 			 * @param WP_Post $attachment The attachment post object.
@@ -504,6 +521,7 @@ class Lucid_Gallery_Lightbox {
 		/**
 		 * Filter the default image size used for the gallery item thumbnails.
 		 *
+		 * @since 2.2.0
 		 * @param string $default_size Defaults to 'thumbnail'.
 		 */
 		$default_size = apply_filters( 'lgljl_default_thumbnail_size', 'thumbnail' );
