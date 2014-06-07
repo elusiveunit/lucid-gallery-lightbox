@@ -378,6 +378,7 @@ class Lucid_Gallery_Lightbox {
 		$output = $gallery_div;
 
 		$include_title = apply_filters( 'lgljl_include_image_title', false );
+		$include_desc = apply_filters( 'lgljl_include_image_description', true );
 		$large_image_size = apply_filters( 'lgljl_large_image_size', 'large' );
 
 		$i = 0;
@@ -385,8 +386,8 @@ class Lucid_Gallery_Lightbox {
 			$image = wp_get_attachment_image( $id, $size );
 			$url = wp_get_attachment_image_src( $id, $large_image_size );
 			$url = $url[0];
-			$title = ( $include_title ) ? esc_attr( $attachment->post_title ) : '';
-			$description = esc_attr( $attachment->post_content );
+			$title = ( $include_title ) ? esc_attr( apply_filters( 'lgljl_caption_title', $attachment->post_title, $attachment ) ) : '';
+			$description = ( $include_desc ) ? esc_attr( apply_filters( 'lgljl_caption_text', $attachment->post_content, $attachment ) ) : '';
 
 			$link = "<a href=\"{$url}\" title=\"{$title}\" data-desc=\"{$description}\" class=\"gallery-item-{$instance} {$this->_gallery_item_class}\">{$image}</a>";
 
