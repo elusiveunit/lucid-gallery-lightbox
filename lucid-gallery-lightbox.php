@@ -38,4 +38,4 @@ if ( ! defined( 'LGLJL_PLUGIN_PATH' ) )
 
 // Load and initialize the plugin parts
 require LGLJL_PLUGIN_PATH . 'inc/core.php';
-$lucid_gallery_lightbox = new Lucid_Gallery_Lightbox( $lgljl_plugin_file );
+$GLOBALS['lucid_gallery_lightbox'] = new Lucid_Gallery_Lightbox( $lgljl_plugin_file );

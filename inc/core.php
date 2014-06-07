@@ -537,7 +537,7 @@ class Lucid_Gallery_Lightbox {
 			'size'       => $default_size,
 			'include'    => '',
 			'exclude'    => '',
-			'link'    => ''
+			'link'       => ''
 		), $attr, 'gallery' );
 
 		$atts['id'] = intval( $atts['id'] );
