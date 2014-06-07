@@ -63,12 +63,14 @@ Whether to initiallize the lightbox automatically (call the lightbox method on g
 
 _Exists as both a function and a filter._
 
-By default, the lightbox JavaScript is only added if a page has a gallery. These can be used to add it to any page, in case you want to use it on something else as well.
+By default, the lightbox JavaScript is only added if a page has a gallery. This filter and/or function can be used to add it to any page, in case you want to use it on something else as well.
 
 **Note:** The container for any custom lightbox use must have the class name `lgljl-gallery` (filterable).
 
 	// Before wp_head
 	add_filter( 'lgljl_do_lightbox', '__return_true' );
+
+or
 
 	// Before wp_footer
 	lgljl_do_lightbox();
@@ -125,17 +127,9 @@ Use to set other gallery types than `image`. At this time of writing, available 
 
 -----
 
-**lgljl\_html5\_shortcode\_output**
-
-Whether to output HTML5 figure and figcaption instead of the default dl/dt/dd elements. Some themes target the default elements directly with their gallery styling, instead of using the available classes, which may break the gallery appearance if using this output.
-
-	add_filter( 'lgljl_html5_shortcode_output', '__return_false' );
-
------
-
 **lgljl\_large\_image\_size**
 
-Name of image size to use for the magnified/lightboxed image. Defaults to `'large'`.
+Name of image size to use for the magnified/lightboxed image. Defaults to `'large'`. Takes the shortcode attributes as an optional second argument.
 
 	/**
 	 * Set the magnified image size used in Lucid Gallery Lightbox.
@@ -169,18 +163,61 @@ Name of image size to use for the gallery thumbnail images. Defaults to `'thumbn
 
 **lgljl\_include\_image\_title**
 
-Whether to include the image (attachment) title in the lightbox caption. Defaults to false, since the title on attachment are often just the file names if left unchanged.
+Whether to include the image (attachment) title in the lightbox caption (and thus on the thumbnail link). Defaults to false, since the title on attachments are often just the file names if left unchanged. Takes the shortcode attributes as an optional second argument.
 
 	add_filter( 'lgljl_include_image_title', '__return_true' );
 
 -----
 
+**lgljl\_include\_image\_caption**
+
+Whether to include the image (attachment) description in the lightbox caption. Defaults to true. Takes the shortcode attributes as an optional second argument.
+
+	add_filter( 'lgljl_include_image_caption', '__return_false' );
+
+-----
+
+**lgljl\_force\_image\_link**
+
+Whether to force linking directly to the images, regardless of gallery setting. Defaults to true, since the lightbox doesn't have anything to display otherwise. If set to false and a non-image gallery is inserted, the gallery items won't have the HTML class name that the JavaScript uses, so no lightbox functionality will be used on those items. Takes the shortcode attributes as an optional second argument.
+
+	add_filter( 'lgljl_force_image_link', '__return_false' );
+
+-----
+
+**lgljl\_caption\_title** and **lgljl\_caption\_text**
+
+Allows filtering of the text on each gallery item.
+
+	/**
+	 * Filter gallery item title text.
+	 *
+	 * @param string $title Defaults to the attachment post title (name).
+	 * @param WP_Post $attachment The attachment post object.
+	 */
+	function my_prefix_reverse_title( $title, $attachment ) {
+		return strrev( $title );
+	}
+	add_filter( 'lgljl_caption_title', 'my_prefix_reverse_title', 10, 2 );
+
+-----
+
 ## Changelog
+
+### 2.3.0: Jun 08, 2014
+
+* New: Add `lgljl_include_image_caption` filter to control if the image caption (description field) should be used.
+* New: Add `lgljl_force_image_link` filter to control the forced linking to the image file.
+* New: Add `lgljl_caption_title` and `lgljl_caption_text` filters to allow manipulation of said text strings.
+* New: Follow in WordPress 3.9's footsteps and add inline documentation to all hooks.
+* Fix/tweak: Add 'gallery' context to `shortcode_atts`.
+* Tweak: Some formatting and structural improvements for readability/scannability.
+* Removed: The `lgljl_html5_shortcode_output` filter serves no practical purpose now that the shortcode has been so customized.
 
 ### 2.2.0: Dec 10, 2013
 
 * New: Add `lgljl_default_thumbnail_size` filter, to control the default thumbnail image size.
-* Tweak: The Magnific Popup options are now printed as a global LGLJL\_OPTIONS object. This is done in the footer before enqueued scripts are printed, so the options can be modified via JavaScript, instead of having to replace them completely when doing something custom.
+* Tweak: The Magnific Popup options are now printed as a global `LGLJL_OPTIONS` object. This is done in the footer before enqueued scripts are printed, so the options can be modified via JavaScript, instead of having to replace them completely when doing something custom.
 * Tweak/fix: Include [this](https://gist.github.com/aubreypwd/7828624) temporary workaround for the issue with `__FILE__` in symlinked plugins, see [trac ticket #16953](http://core.trac.wordpress.org/ticket/16953).
 
 ### 2.1.1: Dec 01, 2013
