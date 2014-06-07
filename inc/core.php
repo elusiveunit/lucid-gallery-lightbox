@@ -188,6 +188,7 @@ class Lucid_Gallery_Lightbox {
 
 		/*
 		 * Don't output, minified is used below.
+		 *
 		 * Using an IIFE for sanitizeCaption to stop minifier from converting it,
 		 * might as well include the global options in it. Also using jQuery DOM
 		 * ready, so external scripts running on that event can manipulate the
@@ -195,14 +196,14 @@ class Lucid_Gallery_Lightbox {
 		 */
 		if ( false ) : ?>
 
-		<script>(function (options, sanitizeCaption) {
-			jQuery(function ($) {
+		<script>(function ( options, sanitizeCaption ) {
+			jQuery(function ( $ ) {
 				'use strict';
 
-				var $emptyDiv = $('<div></div>');
+				var $emptyDiv = $( '<div></div>' );
 
 				// This function is dependant on jQuery, so it can't be set above
-				options.image.titleSrc = function(item) {
+				options.image.titleSrc = function( item ) {
 					var title = item.el.attr( 'title' ),
 					    desc = item.el.data( 'desc' ),
 					    ret = '';
@@ -230,7 +231,7 @@ class Lucid_Gallery_Lightbox {
 				}
 
 				<?php if ( $separate_galleries ) : ?>
-					$('.<?php echo $this->_gallery_class; ?>').each(function() {
+					$('.<?php echo $this->_gallery_class; ?>').each(function () {
 						$(this).magnificPopup( options );
 					});
 				<?php else : ?>
@@ -458,6 +459,5 @@ class Lucid_Gallery_Lightbox {
  * @since 2.1.0
  */
 function lgljl_do_lightbox() {
-	global $lucid_gallery_lightbox;
-	$lucid_gallery_lightbox->setup_lightbox();
+	$GLOBALS['lucid_gallery_lightbox']->setup_lightbox();
 }
