@@ -1,4 +1,6 @@
-# Lucid Gallery Lightbox [![devDependency Status](https://david-dm.org/elusiveunit/lucid-gallery-lightbox/dev-status.svg)](https://david-dm.org/elusiveunit/lucid-gallery-lightbox#info=devDependencies)
+# Lucid Gallery Lightbox
+
+[![devDependency Status](https://david-dm.org/elusiveunit/lucid-gallery-lightbox/dev-status.svg)](https://david-dm.org/elusiveunit/lucid-gallery-lightbox#info=devDependencies)
 
 A tiny plugin that changes [gallery] shortcode output to HTML5 `figure` and `figcaption` elements. Also adds lightbox functionality through Magnific Popup by Dmitry Semenov.
 
