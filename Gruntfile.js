@@ -9,9 +9,6 @@ module.exports = function(grunt) {
 		// CSS concatenation and minification
 		cssmin: {
 			themes: {
-				options: {
-					banner: '/*! <%= pkg.title %> <%= pkg.version %> - Magnific Popup CSS */'
-				},
 				files: {
 					'css/magnific-popup.min.css': ['css/magnific-popup.css']
 				}
