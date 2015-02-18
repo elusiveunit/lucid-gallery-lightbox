@@ -206,6 +206,10 @@ Allows filtering of the text on each gallery item.
 
 ## Changelog
 
+### 2.3.1: Feb 18, 2015
+
+* Remove: The workaround for `__FILE__` in symlinked plugins is no longer needed as of WordPress 3.9.
+
 ### 2.3.0: Jun 08, 2014
 
 * New: Add `lgljl_include_image_caption` filter to control if the image caption (description field) should be used.
