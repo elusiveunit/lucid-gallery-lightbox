@@ -109,8 +109,26 @@ class Lucid_Gallery_Lightbox {
 		 * @since 1.0.0
 		 * @param bool $load Defaults to true, return false to not load it.
 		 */
-		if ( apply_filters( 'lgljl_load_included_css', true ) )
-			wp_enqueue_style( 'lgljl-magnific-popup', LGLJL_PLUGIN_URL . 'css/magnific-popup.min.css', false, LGLJL_VERSION );
+		if ( apply_filters( 'lgljl_load_included_css', true ) ) :
+
+			/**
+			 * Filter whether to limit the CSS loading to pages that has the gallery
+			 * shortcode in the content.
+			 *
+			 * @since 2.4.0
+			 * @param bool $optimize Defaults to false, return true to limit loading.
+			 */
+			if ( apply_filters( 'lgljl_optimize_css_loading', false ) ) :
+				$content = ( is_singular() ) ? get_post_field( 'post_content', get_queried_object_id(), 'raw' ) : '';
+				$load_css = ( $content && has_shortcode( $content, 'gallery' ) );
+			else :
+				$load_css = true;
+			endif;
+
+			if ( $load_css ) :
+				wp_enqueue_style( 'lgljl-magnific-popup', LGLJL_PLUGIN_URL . 'css/magnific-popup.min.css', false, LGLJL_VERSION );
+			endif;
+		endif;
 	}
 
 	/**
