@@ -37,6 +37,16 @@ Whether to load the included lightbox CSS. Set to false and load in the theme's 
 
 -----
 
+**lgljl\_optimize\_css\_loading**
+
+_Only in effect when loading the included CSS._
+
+Whether to limit the CSS loading to pages that has the gallery shortcode in the content. This should be activated unless the lightbox assets are used outside the gallery shortcode.
+
+	add_filter( 'lgljl_optimize_css_loading', '__return_true' );
+
+-----
+
 **lgljl\_load\_included\_js**
 
 Whether to load the included lightbox JavaScript. Set to false and load in the theme's script file (if used) to save a request. Do note though, by default the script only loads when the gallery shortcode is used. Packing it with a theme's script file may introduce unnecessary weight for those who won't need it.
@@ -47,7 +57,9 @@ Whether to load the included lightbox JavaScript. Set to false and load in the t
 
 **lgljl\_use\_custom\_js\_build**
 
-If loading the included JavaScript, this decides if a custom build should be loaded. This build only contains the image, gallery and fastclick components, skipping stuff like ajax and iframe, which isn't used in the gallery shortcode by default. Set to false to load the full version.
+_Only in effect when loading the included JavaScript._
+
+Decides if a custom build should be loaded. This build only contains the image, gallery and fastclick components, skipping stuff like ajax and iframe, which isn't used in the gallery shortcode by default. Set to false to load the full version.
 
 	add_filter( 'lgljl_use_custom_js_build', '__return_false' );
 
@@ -205,6 +217,11 @@ Allows filtering of the text on each gallery item.
 -----
 
 ## Changelog
+
+### 2.4.0: Sep 06, 2015
+
+* New: Add `lgljl_optimize_css_loading` filter to allow the CSS to only be loaded when there is a gallery shortcode in the content.
+* Tweak: Update Magnific Popup to 1.0.0.
 
 ### 2.3.1: Feb 18, 2015
 
