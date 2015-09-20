@@ -218,6 +218,10 @@ Allows filtering of the text on each gallery item.
 
 ## Changelog
 
+### 2.5.0: Sep 20, 2015
+
+* New: Add a class name for the selected link type in the form of `gallery-link-X`, where `X` can be `attachment`, `file` or `none`.
+
 ### 2.4.0: Sep 06, 2015
 
 * New: Add `lgljl_optimize_css_loading` filter to allow the CSS to only be loaded when there is a gallery shortcode in the content.
