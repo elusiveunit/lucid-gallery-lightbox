@@ -453,7 +453,8 @@ class Lucid_Gallery_Lightbox {
 		$float = is_rtl() ? 'right' : 'left';
 
 		$size_class = sanitize_html_class( $size );
-		$gallery_div = "<div id=\"gallery-{$instance}\" class=\"gallery {$this->_gallery_class} galleryid-{$id} gallery-columns-{$columns} gallery-size-{$size_class}\">";
+		$link_class = ( $link ) ? $link : 'attachment';
+		$gallery_div = "<div id=\"gallery-{$instance}\" class=\"gallery {$this->_gallery_class} galleryid-{$id} gallery-columns-{$columns} gallery-size-{$size_class} gallery-link-{$link_class}\">";
 		$output = $gallery_div;
 
 		$i = 0;
