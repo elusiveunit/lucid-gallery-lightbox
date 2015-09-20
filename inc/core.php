@@ -381,42 +381,6 @@ class Lucid_Gallery_Lightbox {
 		$atts = $this->_shortcode_prepare_atts( $attr );
 		$attachments = $this->_shortcode_get_attachments( $atts );
 
-		// A manual extract() for some cleanliness below
-		$id = $atts['id'];
-		$size = $atts['size'];
-		$link = $atts['link'];
-
-		if ( empty( $attachments ) )
-			return '';
-
-		if ( is_feed() ) :
-			$output = "\n";
-			foreach ( $attachments as $att_id => $attachment )
-				$output .= wp_get_attachment_link( $att_id, $size, true ) . "\n";
-
-			return $output;
-		endif;
-
-		$itemtag = tag_escape( $atts['itemtag'] );
-		$captiontag = tag_escape( $atts['captiontag'] );
-		$icontag = tag_escape( $atts['icontag'] );
-		$valid_tags = wp_kses_allowed_html( 'post' );
-
-		if ( ! isset( $valid_tags[$itemtag] ) )
-			$itemtag = 'figure';
-		if ( ! isset( $valid_tags[$icontag] ) )
-			$icontag = 'div';
-		if ( ! isset( $valid_tags[$captiontag] ) )
-			$captiontag = 'figcaption';
-
-		$columns = intval( $atts['columns'] );
-		$itemwidth = $columns > 0 ? floor( 100 / $columns ) : 100;
-		$float = is_rtl() ? 'right' : 'left';
-
-		$size_class = sanitize_html_class( $size );
-		$gallery_div = "<div id=\"gallery-{$instance}\" class=\"gallery {$this->_gallery_class} galleryid-{$id} gallery-columns-{$columns} gallery-size-{$size_class}\">";
-		$output = $gallery_div;
-
 		/**
 		 * Filter whether to include the title attribute on gallery items.
 		 *
@@ -456,12 +420,48 @@ class Lucid_Gallery_Lightbox {
 		 */
 		$force_image_link = apply_filters( 'lgljl_force_image_link', true, $atts );
 
+		// A manual extract() for some cleanliness below
+		$id = $atts['id'];
+		$size = $atts['size'];
+		$link = ( $force_image_link ) ? 'file' : $atts['link'];
+
+		if ( empty( $attachments ) )
+			return '';
+
+		if ( is_feed() ) :
+			$output = "\n";
+			foreach ( $attachments as $att_id => $attachment )
+				$output .= wp_get_attachment_link( $att_id, $size, true ) . "\n";
+
+			return $output;
+		endif;
+
+		$itemtag = tag_escape( $atts['itemtag'] );
+		$captiontag = tag_escape( $atts['captiontag'] );
+		$icontag = tag_escape( $atts['icontag'] );
+		$valid_tags = wp_kses_allowed_html( 'post' );
+
+		if ( ! isset( $valid_tags[$itemtag] ) )
+			$itemtag = 'figure';
+		if ( ! isset( $valid_tags[$icontag] ) )
+			$icontag = 'div';
+		if ( ! isset( $valid_tags[$captiontag] ) )
+			$captiontag = 'figcaption';
+
+		$columns = intval( $atts['columns'] );
+		$itemwidth = $columns > 0 ? floor( 100 / $columns ) : 100;
+		$float = is_rtl() ? 'right' : 'left';
+
+		$size_class = sanitize_html_class( $size );
+		$gallery_div = "<div id=\"gallery-{$instance}\" class=\"gallery {$this->_gallery_class} galleryid-{$id} gallery-columns-{$columns} gallery-size-{$size_class}\">";
+		$output = $gallery_div;
+
 		$i = 0;
 		foreach ( $attachments as $id => $attachment ) :
 			$image = wp_get_attachment_image( $id, $size );
 			$url = '';
 
-			if ( $force_image_link || 'file' == $link ) :
+			if ( 'file' == $link ) :
 				$url = wp_get_attachment_image_src( $id, $large_image_size );
 				$url = ( ! empty( $url[0] ) ) ? $url[0] : '';
 			elseif ( 'none' != $link ) :
@@ -487,7 +487,7 @@ class Lucid_Gallery_Lightbox {
 			 */
 			$description = ( $include_desc ) ? esc_attr( apply_filters( 'lgljl_caption_text', $attachment->post_content, $attachment ) ) : '';
 
-			if ( $url && ( $force_image_link || 'file' == $link ) )
+			if ( $url && 'file' == $link )
 				$item = "<a href=\"{$url}\" title=\"{$title}\" data-desc=\"{$description}\" class=\"gallery-item-{$instance} {$this->_gallery_item_class}\">{$image}</a>";
 			elseif ( $url )
 				$item = "<a href=\"{$url}\" title=\"{$title}\" class=\"gallery-item-{$instance}\">{$image}</a>";
