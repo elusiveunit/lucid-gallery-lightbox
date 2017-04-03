@@ -520,6 +520,8 @@ class Lucid_Gallery_Lightbox {
 	 * @return array Attributes run through shortcode_atts and generally 'fixed'.
 	 */
 	protected function _shortcode_prepare_atts( $attr ) {
+		$post = get_post();
+
 		if ( ! empty( $attr['ids'] ) ) :
 
 			// 'ids' is explicitly ordered, unless you specify otherwise.
@@ -548,7 +550,7 @@ class Lucid_Gallery_Lightbox {
 		$atts = shortcode_atts( array(
 			'order'      => 'ASC',
 			'orderby'    => 'menu_order ID',
-			'id'         => $GLOBALS['post']->ID,
+			'id'         => ($post) ? $post->ID : 0,
 			'itemtag'    => 'figure',
 			'icontag'    => 'div',
 			'captiontag' => 'figcaption',
