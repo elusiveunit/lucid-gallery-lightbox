@@ -6,7 +6,7 @@
  * Plugin URI: https://github.com/elusiveunit/lucid-gallery-lightbox
  * Description: Changes [gallery] shortcode output to HTML5 and adds lightbox functionality.
  * Author: Jens Lindberg
- * Version: 2.5.0
+ * Version: 2.6.0
  * License: GPL-2.0+
  * Text Domain: lgljl
  * Domain Path: /lang
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) die( 'Nope' );
 
 // Plugin constants
 if ( ! defined( 'LGLJL_VERSION' ) )
-	define( 'LGLJL_VERSION', '2.5.0' );
+	define( 'LGLJL_VERSION', '2.6.0' );
 
 if ( ! defined( 'LGLJL_PLUGIN_URL' ) )
 	define( 'LGLJL_PLUGIN_URL', trailingslashit( plugin_dir_url( __FILE__ ) ) );

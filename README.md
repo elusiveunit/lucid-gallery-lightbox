@@ -218,6 +218,11 @@ Allows filtering of the text on each gallery item.
 
 ## Changelog
 
+### 2.6.0: Apr 03, 2017
+
+* New/tweak: Update Magnific Popup to 1.1.0.
+* Fix: Prevent a notice when getting post ID.
+
 ### 2.5.0: Sep 20, 2015
 
 * New: Add a class name for the selected link type in the form of `gallery-link-X`, where `X` can be `attachment`, `file` or `none`.
